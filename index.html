@@ -169,14 +169,13 @@
   }
 
   .card {
-    background: linear-gradient(145deg, #221a0e, #1a1208);
+    background: #1a1208;
     border: 1px solid rgba(200,136,42,0.15);
     border-radius: 6px;
     padding: 1.5rem;
     cursor: pointer;
     transition: all 0.25s ease;
     position: relative;
-    overflow: hidden;
     animation: fadeUp 0.4s ease both;
   }
 
@@ -351,10 +350,11 @@
     justify-content: center;
     transition: all 0.2s;
     color: var(--amber-dark);
+    overflow: hidden;
   }
 
   .card:hover .toggle-icon { border-color: var(--amber); color: var(--amber); }
-  .card.expanded .toggle-icon { background: var(--amber); color: var(--ink); border-color: var(--amber); transform: rotate(45deg); }
+  .card.expanded .toggle-icon { background: var(--amber); color: var(--ink); border-color: var(--amber); }
 
   .hidden { display: none !important; }
 
@@ -780,23 +780,19 @@
   }
   .photo-skeleton {
     position: absolute; inset: 0;
-    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
+    background: rgba(255,255,255,0.04);
+    z-index: 1;
   }
   .photo-skeleton.hidden { display: none; }
   .card-photo-img {
+    position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover;
     opacity: 0;
     transition: opacity 0.4s;
-    position: relative;
+    z-index: 2;
   }
   .card-photo-img.loaded { opacity: 1; }
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
 </style>
 </head>
 <body>
@@ -1978,110 +1974,99 @@ const cocktails = [
   }
 ];
 
-// Image cache keyed by cocktail id
-const imageCache = {};
-
-
-
-
-
-
 const cocktailImages = {
-  'Old Fashioned 古典雞尾酒': 'images/old-fashioned.jpg',
-  'Manhattan 曼哈頓': 'images/manhattan.jpg',
-  'Sazerac 薩澤瑞克': 'images/sazerac.jpg',
-  'Negroni 尼格羅尼': 'images/negroni.jpg',
-  'Mint Julep 薄荷朱利普': 'images/mint-julep.jpg',
-  'Tom Collins 湯姆柯林斯': 'images/tom-collins.jpg',
-  'Margarita 瑪格麗特': 'images/margarita.jpg',
-  'Daiquiri 黛克瑞': 'images/daiquiri.jpg',
-  'Martini 馬丁尼': 'images/martini.jpg',
-  'Brandy Alexander 白蘭地亞歷山大': 'images/brandy-alexander.jpg',
-  'Improved Whiskey Cocktail 改良威士忌': 'images/improved-whiskey-cocktail.jpg',
-  'Gin Rickey 琴瑞奇': 'images/gin-rickey.jpg',
-  'Paloma 帕洛瑪': 'images/paloma.jpg',
-  "Bee's Knees 蜜蜂之膝": 'images/bees-knees.jpg',
-  'Monte Carlo 蒙地卡羅': 'images/monte-carlo.jpg',
-  'Boulevardier 布勒瓦迪耶': 'images/boulevardier.jpg',
-  'Mai Tai 邁泰': 'images/mai-tai.jpg',
-  'Aperol Spritz 艾普羅氣泡': 'images/aperol-spritz.jpg',
-  'Champagne Cocktail 香檳雞尾酒': 'images/champagne-cocktail.jpg',
-  'Pink Lady 粉紅佳人': 'images/pink-lady.jpg',
-  'Jack Rose 傑克玫瑰': 'images/jack-rose.jpg',
-  'Caipirinha 卡琵莉亞': 'images/caipirinha.jpg',
-  'Mexican Firing Squad 墨西哥行刑隊': 'images/mexican-firing-squad.jpg',
-  'Last Word 臨別一語': 'images/last-word.jpg',
-  'Sidecar 側車': 'images/sidecar.jpg',
-  'Mojito 莫西多': 'images/mojito.jpg',
-  'Corpse Reviver No. 2 亡者復甦二號': 'images/corpse-reviver-no-2.jpg',
-  'Gimlet 琴蕾': 'images/gimlet.jpg',
-  'Martinez 馬丁尼茲': 'images/martinez.jpg',
-  'Singapore Sling 新加坡司令': 'images/singapore-sling.jpg',
-  'Silver Fizz 銀費士': 'images/silver-fizz.jpg',
-  'Daisy 雛菊': 'images/daisy.jpg',
-  'Jungle Bird 叢林鳥': 'images/jungle-bird.jpg',
-  'Americano 美國佬': 'images/americano.jpg',
-  'Bamboo 竹子': 'images/bamboo.jpg',
-  "Dark 'n Stormy 黑暗風暴": 'images/dark-n-stormy.jpg',
-  'Whiskey Smash 威士忌斯麥許': 'images/whiskey-smash.jpg',
-  'Gin Fix 琴費克斯': 'images/gin-fix.jpg',
-  'Vesper 薇斯朋': 'images/vesper.jpg',
-  '20th Century 二十世紀': 'images/20th-century.jpg',
-  'French 75 法國七五': 'images/french-75.jpg',
-  'Aviation 飛行': 'images/aviation.jpg',
-  'Rye Buck 裸麥巴克': 'images/rye-buck.jpg',
-  'Moscow Mule 莫斯科騾子': 'images/moscow-mule.jpg',
-  'Kangaroo 袋鼠': 'images/kangaroo.jpg',
-  'Hemingway Daiquiri 海明威黛克瑞': 'images/hemingway-daiquiri.jpg',
-  'Vieux Carré 老廣場': 'images/vieux-carre.jpg',
-  'Presbyterian 長老會': 'images/presbyterian.jpg',
-  'Pisco Sour 皮斯可酸酒': 'images/pisco-sour.jpg',
-  'Whiskey Sour 威士忌酸酒': 'images/whiskey-sour.jpg',
-  'Irish Coffee 愛爾蘭咖啡': 'images/irish-coffee.jpg',
-  'Screwdriver 螺絲起子': 'images/screwdriver.jpg',
-  'Bloody Mary 血腥瑪麗': 'images/bloody-mary.jpg',
-  'Cosmopolitan 柯夢波丹': 'images/cosmopolitan.jpg',
-  'Dry Martini 乾馬丁尼': 'images/dry-martini.jpg',
-  'Long Island Iced Tea 長島冰茶': 'images/long-island-iced-tea.jpg',
-  'B&B 白蘭地班尼迪克丁': 'images/b-and-b.jpg',
-  'Rusty Nail 鏽釘子': 'images/rusty-nail.jpg',
-  'Clover Club 三葉草俱樂部': 'images/clover-club.jpg',
-  'Paper Plane 紙飛機': 'images/paper-plane.jpg',
-  'Gin Tonic 琴通寧': 'images/gin-tonic.jpg',
-  'Highball 高球': 'images/highball.jpg',
-  'Sex on the Beach 性感海灘': 'images/sex-on-the-beach.jpg',
-  'Tequila Sunrise 龍舌蘭日出': 'images/tequila-sunrise.jpg',
-  'Pornstar Martini 艷星馬丁尼': 'images/pornstar-martini.jpg',
-  'Zombie 殭屍': 'images/zombie.jpg',
-  'White Negroni 白尼格羅尼': 'images/white-negroni.jpg',
-  'Alaska 阿拉斯加': 'images/alaska.jpg',
-  'Naked and Famous 一脫成名': 'images/naked-and-famous.jpg',
-  'Piña Colada 鳳梨可樂達': 'images/pina-colada.jpg',
-  'Alexander 亞歷山大': 'images/alexander.jpg',
-  'Ramos Gin Fizz 拉莫斯琴費士': 'images/ramos-gin-fizz.jpg',
-  'Eggnog 蛋酒': 'images/eggnog.jpg',
-  'Espresso Martini 咖啡馬丁尼': 'images/espresso-martini.jpg',
-  'Penicillin 盤尼西林': 'images/penicillin.jpg',
+  "20th Century 二十世紀": "images/20th Century.jpg",
+  "Alaska 阿拉斯加": "images/Alaska.webp",
+  "Alexander 亞歷山大": "images/Alexander.jpg",
+  "Americano 美國佬": "images/Americano.jpeg",
+  "Aperol Spritz 艾普羅氣泡": "images/Aperol Spritz.jpg",
+  "Aviation 飛行": "images/Aviation.jpg",
+  "B&B 白蘭地班尼迪克丁": "images/B-and-B.jpeg",
+  "Bamboo 竹子": "images/Bamboo.jpg",
+  "Bee's Knees 蜜蜂之膝": "images/Bee's Knees.jpg",
+  "Bloody Mary 血腥瑪麗": "images/Bloody Mary.jpeg",
+  "Boulevardier 布勒瓦迪耶": "images/Boulevardier.jpeg",
+  "Brandy Alexander 白蘭地亞歷山大": "images/Brandy Alexander.jpg",
+  "Caipirinha 卡琵莉亞": "images/Caipirinha.jpg",
+  "Champagne Cocktail 香檳雞尾酒": "images/Champagne Cocktail.jpeg",
+  "Clover Club 三葉草俱樂部": "images/Clover Club.jpg",
+  "Cosmopolitan 柯夢波丹": "images/Cosmopolitan.jpeg",
+  "Daiquiri 黛克瑞": "images/Daiquiri.jpg",
+  "Daisy 雛菊": "images/Daisy.jpg",
+  "Dark 'n Stormy 黑暗風暴": "images/Dark 'n Stormy.jpg",
+  "Dry Martini 乾馬丁尼": "images/Dry Martini.jpeg",
+  "Eggnog 蛋酒": "images/Eggnog.jpeg",
+  "Espresso Martini 咖啡馬丁尼": "images/Espresso Martini.webp",
+  "French 75 法國七五": "images/French 75.jpeg",
+  "Gimlet 琴蕾": "images/Gimlet.jpg",
+  "Gin Fix 琴費克斯": "images/Gin Fix.jpg",
+  "Gin Rickey 琴瑞奇": "images/Gin Rickey.jpg",
+  "Gin Tonic 琴通寧": "images/Gin Tonic.jpeg",
+  "Hemingway Daiquiri 海明威黛克瑞": "images/Hemingway Daiquiri.jpeg",
+  "Highball 高球": "images/Highball.jpg",
+  "Improved Whiskey Cocktail 改良威士忌": "images/Improved Whiskey.jpg",
+  "Irish Coffee 愛爾蘭咖啡": "images/Irish Coffee.jpeg",
+  "Jack Rose 傑克玫瑰": "images/Jack Rose.jpeg",
+  "Jungle Bird 叢林鳥": "images/Jungle Bird.jpg",
+  "Kangaroo 袋鼠": "images/Kangaroo.jpeg",
+  "Last Word 臨別一語": "images/Last Word.jpeg",
+  "Long Island Iced Tea 長島冰茶": "images/Long Island Iced Tea.webp",
+  "Mai Tai 邁泰": "images/Mai Tai.jpg",
+  "Manhattan 曼哈頓": "images/Manhattan.jpg",
+  "Margarita 瑪格麗特": "images/Margarita.jpg",
+  "Martinez 馬丁尼茲": "images/Martinez.jpg",
+  "Martini 馬丁尼": "images/Martini.webp",
+  "Mexican Firing Squad 墨西哥行刑隊": "images/Mexican Firing Squad.jpeg",
+  "Mint Julep 薄荷朱利普": "images/Mint Julep.jpg",
+  "Mojito 莫西多": "images/Mojito.jpeg",
+  "Monte Carlo 蒙地卡羅": "images/Monte Carlo.jpeg",
+  "Moscow Mule 莫斯科騾子": "images/Moscow Mule.webp",
+  "Naked and Famous 一脫成名": "images/Naked and Famous.webp",
+  "Negroni 尼格羅尼": "images/Negroni.webp",
+  "Old Fashioned 古典雞尾酒": "images/Old Fashioned.jpeg",
+  "Paloma 帕洛瑪": "images/Paloma.jpg",
+  "Paper Plane 紙飛機": "images/Paper Plane.jpg",
+  "Penicillin 盤尼西林": "images/Penicillin.jpg",
+  "Piña Colada 鳳梨可樂達": "images/pina-colada.jpeg",
+  "Pink Lady 粉紅佳人": "images/Pink Lady.jpg",
+  "Pisco Sour 皮斯可酸酒": "images/Pisco Sour.jpg",
+  "Pornstar Martini 艷星馬丁尼": "images/Pornstar Martini.jpeg",
+  "Presbyterian 長老會": "images/Presbyterian.jpg",
+  "Ramos Gin Fizz 拉莫斯琴費士": "images/Ramos Gin Fizz.webp",
+  "Rusty Nail 鏽釘子": "images/Rusty Nail.jpg",
+  "Rye Buck 裸麥巴克": "images/Rye Buck.jpg",
+  "Sazerac 薩澤瑞克": "images/Sazerac.jpg",
+  "Screwdriver 螺絲起子": "images/Screwdriver.webp",
+  "Sex on the Beach 性感海灘": "images/Sex on the Beach.jpeg",
+  "Sidecar 側車": "images/Sidecar.webp",
+  "Silver Fizz 銀費士": "images/Silver Fizz.jpeg",
+  "Singapore Sling 新加坡司令": "images/Singapore Sling.jpeg",
+  "Tequila Sunrise 龍舌蘭日出": "images/Tequila Sunrise.jpeg",
+  "Tom Collins 湯姆柯林斯": "images/Tom Collins.webp",
+  "Vesper 薇斯朋": "images/Vesper.jpg",
+  "Vieux Carré 老廣場": "images/Vieux Carré.jpg",
+  "Whiskey Smash 威士忌斯麥許": "images/Whiskey Smash.jpeg",
+  "Whiskey Sour 威士忌酸酒": "images/Whiskey Sour.jpeg",
+  "White Negroni 白尼格羅尼": "images/White Negroni.jpg",
+  "Corpse Reviver No. 2 亡者復甦二號": "images/Corpse Reviver No. 2.jpg",
+  "Zombie 殭屍": "images/Zombie.jpeg",
 };
-
-function getImageUrl(name) {
-  return cocktailImages[name] || '';
-}
-
 
 function loadPhotoForCard(el, cocktail) {
   const skeleton = el.querySelector('.photo-skeleton');
   const img = el.querySelector('.card-photo-img');
   if (!img || img.dataset.loaded === 'true') return;
-  const url = getImageUrl(cocktail.name);
-  if (!url) { if (skeleton) skeleton.textContent = ''; return; }
+  const url = cocktailImages[cocktail.name];
+  if (!url) { if (skeleton) skeleton.style.display = 'none'; return; }
   img.src = url;
   img.onload = () => {
     img.classList.add('loaded');
     img.dataset.loaded = 'true';
     if (skeleton) skeleton.classList.add('hidden');
   };
-  img.onerror = () => { if (skeleton) skeleton.style.display = 'none'; };
+  img.onerror = () => {
+    if (skeleton) skeleton.style.display = 'none';
+  };
 }
 
 function renderCards(list) {
@@ -2103,6 +2088,10 @@ function renderCards(list) {
       <div class="card-preview">${c.preview}</div>
       ${c.moods && c.moods.length ? `<div class="mood-tags">${c.moods.map(m => `<span class="mood-tag ${m}">${moodLabels[m]}</span>`).join('')}</div>` : ''}
       <div class="card-expand">
+        <div class="card-photo-wrap">
+          <div class="photo-skeleton"></div>
+          <img class="card-photo-img" alt="${c.name}" src="" />
+        </div>
         <div class="section-label">成分與比例</div>
         <ul class="ingredients-list">
           ${c.ingredients.map(ing => `<li><span class="ing-name">${ing.name}</span><span class="ing-amount">${ing.amount}</span></li>`).join('')}
@@ -2113,10 +2102,8 @@ function renderCards(list) {
 
       </div>
       <div class="toggle-icon">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-          <rect x="4" y="0" width="2" height="10"/>
-          <rect x="0" y="4" width="10" height="2" class="h-bar"/>
-        </svg>
+        <span class="toggle-plus">＋</span>
+        <span class="toggle-minus" style="display:none">－</span>
       </div>
     `;
     // Fav button: stop propagation so it doesn't expand card
@@ -2129,11 +2116,14 @@ function renderCards(list) {
       const wasExpanded = el.classList.contains('expanded');
       if (!wasExpanded) loadPhotoForCard(el, c);
       el.classList.toggle('expanded');
-      const hBar = el.querySelector('.h-bar');
+      const plus = el.querySelector('.toggle-plus');
+      const minus = el.querySelector('.toggle-minus');
       if (el.classList.contains('expanded')) {
-        hBar.style.display = 'none';
+        if (plus) plus.style.display = 'none';
+        if (minus) minus.style.display = '';
       } else {
-        hBar.style.display = '';
+        if (plus) plus.style.display = '';
+        if (minus) minus.style.display = 'none';
       }
     });
     grid.appendChild(el);
