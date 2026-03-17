@@ -334,68 +334,7 @@
     white-space: nowrap;
   }
 
-  /* ── 成品圖片 ── */
-  .card-photo-wrap {
-    margin-top: 1.25rem;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-    background: #111;
-  }
-
-  .card-photo-wrap img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease, opacity 0.3s ease;
-    opacity: 0;
-  }
-
-  .card-photo-wrap img.loaded {
-    opacity: 1;
-  }
-
-  .card-photo-wrap:hover img {
-    transform: scale(1.04);
-  }
-
-  .photo-skeleton {
-    width: 100%;
-    height: 200px;
-    background: linear-gradient(90deg, #1e1508 25%, #2a1e0a 50%, #1e1508 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    position: absolute;
-    top: 0; left: 0;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--amber-dark);
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-  }
-
-  .photo-skeleton.hidden { display: none; }
-
-  .photo-credit {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 0.4rem 0.6rem;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-    font-size: 0.69rem;
-    color: rgba(255,255,255,0.5);
-    text-align: right;
-  }
-
-  .photo-credit a {
-    color: rgba(255,255,255,0.6);
-    text-decoration: none;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
+  
     100% { background-position: 200% 0; }
   }
 
@@ -633,7 +572,8 @@
 
   .action-btn .btn-count.zero { opacity: 0.4; }
 
-  /* ── 收藏按鈕（卡片內） ── */
+
+    /* ── 收藏按鈕（卡片內） ── */
   .fav-btn {
     position: absolute;
     top: 1rem;
@@ -827,6 +767,36 @@
     color: rgba(107,95,78,0.5);
     border-top: 1px solid rgba(200,136,42,0.08);
   }
+
+  /* ── 成品圖片 ── */
+  .card-photo-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: rgba(0,0,0,0.25);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .photo-skeleton {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+  .photo-skeleton.hidden { display: none; }
+  .card-photo-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.4s;
+    position: relative;
+  }
+  .card-photo-img.loaded { opacity: 1; }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 </style>
 </head>
 <body>
@@ -900,9 +870,17 @@
 <footer>配方參考自 The Educated Barfly YouTube 頻道 · 僅供學習參考</footer>
 
 <script>
+// ── 全域狀態變數（統一宣告）──────────────────────────────
+let currentFilter = 'all';
+let currentSearch = '';
+let currentMood = null;
+let favourites = new Set();
+let viewingFavs = false;
+let currentModalCocktail = null;
+
 const cocktails = [
   {
-    id: 1, name: "Old Fashioned", spirit: "whiskey",
+    id: 1, name: "Old Fashioned 古典雞尾酒", spirit: "whiskey",
     badges: ["波本/裸麥威士忌", "攪拌"],
     preview: "調酒界的定義之作，簡單而深刻",
     ingredients: [
@@ -915,7 +893,7 @@ const cocktails = [
     moods: ["relax", "drunk"],
   },
   {
-    id: 2, name: "Manhattan", spirit: "whiskey",
+    id: 2, name: "Manhattan 曼哈頓", spirit: "whiskey",
     badges: ["裸麥威士忌", "攪拌"],
     preview: "紐約都會風情，優雅而有深度",
     ingredients: [
@@ -928,7 +906,7 @@ const cocktails = [
     moods: ["romantic", "relax"],
   },
   {
-    id: 3, name: "Sazerac", spirit: "whiskey",
+    id: 3, name: "Sazerac 薩澤瑞克", spirit: "whiskey",
     badges: ["裸麥威士忌", "攪拌", "經典紐奧良"],
     preview: "新奧良最古老的調酒之一",
     ingredients: [
@@ -943,7 +921,7 @@ const cocktails = [
     moods: ["relax", "drunk"],
   },
   {
-    id: 4, name: "Negroni", spirit: "gin",
+    id: 4, name: "Negroni 尼格羅尼", spirit: "gin",
     badges: ["琴酒", "攪拌", "義式"],
     preview: "苦甜平衡的完美三等分",
     ingredients: [
@@ -956,7 +934,7 @@ const cocktails = [
     moods: ["sexy", "romantic"],
   },
   {
-    id: 5, name: "Mint Julep", spirit: "whiskey",
+    id: 5, name: "Mint Julep 薄荷朱利普", spirit: "whiskey",
     badges: ["波本威士忌", "搗壓"],
     preview: "肯塔基德比的官方飲料",
     ingredients: [
@@ -969,7 +947,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 6, name: "Tom Collins", spirit: "gin",
+    id: 6, name: "Tom Collins 湯姆柯林斯", spirit: "gin",
     badges: ["琴酒", "搖盪", "長飲"],
     preview: "清爽的柑橘氣泡長飲",
     ingredients: [
@@ -983,7 +961,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 7, name: "Margarita", spirit: "tequila",
+    id: 7, name: "Margarita 瑪格麗特", spirit: "tequila",
     badges: ["龍舌蘭", "搖盪"],
     preview: "最受歡迎的龍舌蘭調酒",
     ingredients: [
@@ -997,7 +975,7 @@ const cocktails = [
     moods: ["happy", "sexy"],
   },
   {
-    id: 8, name: "Daiquiri", spirit: "rum",
+    id: 8, name: "Daiquiri 黛克瑞", spirit: "rum",
     badges: ["白蘭姆酒", "搖盪", "古巴"],
     preview: "三種材料的平衡藝術",
     ingredients: [
@@ -1010,7 +988,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 9, name: "Martini", spirit: "gin",
+    id: 9, name: "Martini 馬丁尼", spirit: "gin",
     badges: ["琴酒", "攪拌"],
     preview: "調酒之王，在苦艾酒比例中取得平衡",
     ingredients: [
@@ -1023,7 +1001,7 @@ const cocktails = [
     moods: ["sexy", "romantic"],
   },
   {
-    id: 10, name: "Brandy Alexander", spirit: "brandy",
+    id: 10, name: "Brandy Alexander 白蘭地亞歷山大", spirit: "brandy",
     badges: ["白蘭地", "搖盪", "甜點風"],
     preview: "絲滑奶香的甜點調酒",
     ingredients: [
@@ -1036,7 +1014,7 @@ const cocktails = [
     moods: ["relax", "romantic"],
   },
   {
-    id: 11, name: "Improved Whiskey Cocktail", spirit: "whiskey",
+    id: 11, name: "Improved Whiskey Cocktail 改良威士忌", spirit: "whiskey",
     badges: ["裸麥威士忌", "攪拌", "19世紀"],
     preview: "Old Fashioned 的進化版，加入苦艾酒與黃色沙特勒斯",
     ingredients: [
@@ -1051,7 +1029,7 @@ const cocktails = [
     moods: ["relax", "drunk"],
   },
   {
-    id: 12, name: "Gin Rickey", spirit: "gin",
+    id: 12, name: "Gin Rickey 琴瑞奇", spirit: "gin",
     badges: ["琴酒", "長飲", "無甜"],
     preview: "清爽無糖的氣泡萊姆長飲",
     ingredients: [
@@ -1064,7 +1042,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 13, name: "Paloma", spirit: "tequila",
+    id: 13, name: "Paloma 帕洛瑪", spirit: "tequila",
     badges: ["龍舌蘭", "長飲", "墨西哥"],
     preview: "墨西哥人比 Margarita 更常喝的國民飲料",
     ingredients: [
@@ -1079,7 +1057,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 14, name: "Bee's Knees", spirit: "gin",
+    id: 14, name: "Bee's Knees 蜜蜂之膝", spirit: "gin",
     badges: ["琴酒", "搖盪", "禁酒時代"],
     preview: "蜂蜜與柑橘讓琴酒更閃耀",
     ingredients: [
@@ -1092,7 +1070,7 @@ const cocktails = [
     moods: ["happy", "romantic"],
   },
   {
-    id: 15, name: "Monte Carlo", spirit: "whiskey",
+    id: 15, name: "Monte Carlo 蒙地卡羅", spirit: "whiskey",
     badges: ["裸麥威士忌", "攪拌"],
     preview: "加入 Bénédictine 的 Manhattan 變奏",
     ingredients: [
@@ -1105,7 +1083,7 @@ const cocktails = [
     moods: ["relax", "romantic"],
   },
   {
-    id: 16, name: "Boulevardier", spirit: "whiskey",
+    id: 16, name: "Boulevardier 布勒瓦迪耶", spirit: "whiskey",
     badges: ["波本威士忌", "攪拌"],
     preview: "以波本取代琴酒的 Negroni 兄弟",
     ingredients: [
@@ -1118,7 +1096,7 @@ const cocktails = [
     moods: ["relax", "sexy"],
   },
   {
-    id: 17, name: "Mai Tai", spirit: "rum",
+    id: 17, name: "Mai Tai 邁泰", spirit: "rum",
     badges: ["蘭姆酒", "搖盪", "提基"],
     preview: "奧格尼的塔希提語：「好極了！」",
     ingredients: [
@@ -1133,7 +1111,7 @@ const cocktails = [
     moods: ["happy", "drunk"],
   },
   {
-    id: 18, name: "Aperol Spritz", spirit: "other",
+    id: 18, name: "Aperol Spritz 艾普羅氣泡", spirit: "other",
     badges: ["Aperol", "氣泡", "義式"],
     preview: "義大利夏日午後的下午茶時光",
     ingredients: [
@@ -1146,7 +1124,7 @@ const cocktails = [
     moods: ["happy", "romantic"],
   },
   {
-    id: 19, name: "Champagne Cocktail", spirit: "other",
+    id: 19, name: "Champagne Cocktail 香檳雞尾酒", spirit: "other",
     badges: ["香檳", "氣泡", "經典"],
     preview: "19世紀的優雅氣泡傑作",
     ingredients: [
@@ -1160,7 +1138,7 @@ const cocktails = [
     moods: ["romantic", "relax"],
   },
   {
-    id: 20, name: "Pink Lady", spirit: "gin",
+    id: 20, name: "Pink Lady 粉紅佳人", spirit: "gin",
     badges: ["琴酒", "搖盪", "蛋白"],
     preview: "粉嫩絲滑的禁酒時代經典",
     ingredients: [
@@ -1175,7 +1153,7 @@ const cocktails = [
     moods: ["romantic", "sexy"],
   },
   {
-    id: 21, name: "Jack Rose", spirit: "brandy",
+    id: 21, name: "Jack Rose 傑克玫瑰", spirit: "brandy",
     badges: ["蘋果白蘭地", "搖盪"],
     preview: "紅石榴配蘋果白蘭地的美式經典",
     ingredients: [
@@ -1188,7 +1166,7 @@ const cocktails = [
     moods: ["relax", "miss"],
   },
   {
-    id: 22, name: "Caipirinha", spirit: "other",
+    id: 22, name: "Caipirinha 卡琵莉亞", spirit: "other",
     badges: ["卡沙夏", "搗壓", "巴西"],
     preview: "巴西國酒，簡單直接的熱帶風情",
     ingredients: [
@@ -1201,7 +1179,7 @@ const cocktails = [
     moods: ["happy", "drunk"],
   },
   {
-    id: 23, name: "Mexican Firing Squad", spirit: "tequila",
+    id: 23, name: "Mexican Firing Squad 墨西哥行刑隊", spirit: "tequila",
     badges: ["龍舌蘭", "搖盪"],
     preview: "Charles Baker 1946 年配方，鮮豔而複雜",
     ingredients: [
@@ -1216,7 +1194,7 @@ const cocktails = [
     moods: ["drunk", "happy"],
   },
   {
-    id: 24, name: "Last Word", spirit: "gin",
+    id: 24, name: "Last Word 臨別一語", spirit: "gin",
     badges: ["琴酒", "搖盪", "禁酒時代"],
     preview: "四種材料各佔四分之一的完美平衡",
     ingredients: [
@@ -1230,7 +1208,7 @@ const cocktails = [
     moods: ["sexy", "relax"],
   },
   {
-    id: 25, name: "Sidecar", spirit: "brandy",
+    id: 25, name: "Sidecar 側車", spirit: "brandy",
     badges: ["干邑白蘭地", "搖盪"],
     preview: "1920年代巴黎的精緻奶油甜酒",
     ingredients: [
@@ -1243,7 +1221,7 @@ const cocktails = [
     moods: ["romantic", "relax"],
   },
   {
-    id: 26, name: "Mojito", spirit: "rum",
+    id: 26, name: "Mojito 莫西多", spirit: "rum",
     badges: ["白蘭姆酒", "搗壓", "古巴"],
     preview: "哈瓦那最受歡迎的清涼特調",
     ingredients: [
@@ -1258,7 +1236,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 27, name: "Corpse Reviver No. 2", spirit: "gin",
+    id: 27, name: "Corpse Reviver No. 2 亡者復甦二號", spirit: "gin",
     badges: ["琴酒", "搖盪", "解宿醉"],
     preview: "「三杯下肚，起死回生」",
     ingredients: [
@@ -1273,7 +1251,7 @@ const cocktails = [
     moods: ["drunk", "relax"],
   },
   {
-    id: 28, name: "Gimlet", spirit: "gin",
+    id: 28, name: "Gimlet 琴蕾", spirit: "gin",
     badges: ["琴酒", "搖盪"],
     preview: "新鮮萊姆帶出琴酒植物香氣",
     ingredients: [
@@ -1286,7 +1264,7 @@ const cocktails = [
     moods: ["relax", "happy"],
   },
   {
-    id: 29, name: "Martinez", spirit: "gin",
+    id: 29, name: "Martinez 馬丁尼茲", spirit: "gin",
     badges: ["老湯姆琴酒", "攪拌", "Martini 前身"],
     preview: "馬丁尼的前身，更甜更圓潤",
     ingredients: [
@@ -1300,7 +1278,7 @@ const cocktails = [
     moods: ["romantic", "relax"],
   },
   {
-    id: 30, name: "Singapore Sling", spirit: "gin",
+    id: 30, name: "Singapore Sling 新加坡司令", spirit: "gin",
     badges: ["琴酒", "搖盪", "新加坡"],
     preview: "萊佛士酒店 1915 年誕生的熱帶長飲",
     ingredients: [
@@ -1318,7 +1296,7 @@ const cocktails = [
     moods: ["happy", "drunk"],
   },
   {
-    id: 31, name: "Silver Fizz", spirit: "gin",
+    id: 31, name: "Silver Fizz 銀費士", spirit: "gin",
     badges: ["琴酒", "搖盪", "蛋白"],
     preview: "Gin Fizz 的絲滑蛋白升級版",
     ingredients: [
@@ -1333,7 +1311,7 @@ const cocktails = [
     moods: ["sexy", "romantic"],
   },
   {
-    id: 32, name: "Daisy", spirit: "tequila",
+    id: 32, name: "Daisy 雛菊", spirit: "tequila",
     badges: ["龍舌蘭", "搖盪"],
     preview: "Margarita 的前身，以 soda 延伸",
     ingredients: [
@@ -1348,7 +1326,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 33, name: "Jungle Bird", spirit: "rum",
+    id: 33, name: "Jungle Bird 叢林鳥", spirit: "rum",
     badges: ["深色蘭姆酒", "搖盪", "提基"],
     preview: "以 Campari 入提基——意外的傑作",
     ingredients: [
@@ -1363,7 +1341,7 @@ const cocktails = [
     moods: ["happy", "drunk"],
   },
   {
-    id: 34, name: "Americano", spirit: "other",
+    id: 34, name: "Americano 美國佬", spirit: "other",
     badges: ["Campari", "攪拌", "義式"],
     preview: "Negroni 的無酒精前輩，James Bond 的第一杯",
     ingredients: [
@@ -1376,7 +1354,7 @@ const cocktails = [
     moods: ["relax", "romantic"],
   },
   {
-    id: 35, name: "Bamboo", spirit: "other",
+    id: 35, name: "Bamboo 竹子", spirit: "other",
     badges: ["苦艾酒", "攪拌", "低酒精"],
     preview: "日本橫濱 1895 年誕生的低酒精精品",
     ingredients: [
@@ -1390,7 +1368,7 @@ const cocktails = [
     moods: ["relax", "miss"],
   },
   {
-    id: 36, name: "Dark 'n Stormy", spirit: "rum",
+    id: 36, name: "Dark 'n Stormy 黑暗風暴", spirit: "rum",
     badges: ["深色蘭姆酒", "長飲", "百慕達"],
     preview: "Gosling's 蘭姆酒的官方指定喝法",
     ingredients: [
@@ -1403,7 +1381,7 @@ const cocktails = [
     moods: ["drunk", "happy"],
   },
   {
-    id: 37, name: "Whiskey Smash", spirit: "whiskey",
+    id: 37, name: "Whiskey Smash 威士忌斯麥許", spirit: "whiskey",
     badges: ["波本威士忌", "搗壓"],
     preview: "清新薄荷加上波本的夏日之選",
     ingredients: [
@@ -1417,7 +1395,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 38, name: "Gin Fix", spirit: "gin",
+    id: 38, name: "Gin Fix 琴費克斯", spirit: "gin",
     badges: ["琴酒", "搖盪"],
     preview: "鳳梨汁提升的清爽柑橘",
     ingredients: [
@@ -1431,7 +1409,7 @@ const cocktails = [
     moods: ["happy", "relax"],
   },
   {
-    id: 39, name: "Vesper", spirit: "gin",
+    id: 39, name: "Vesper 薇斯朋", spirit: "gin",
     badges: ["琴酒", "伏特加", "攪拌", "007"],
     preview: "James Bond 的原創配方——「搖盪，不攪拌」",
     ingredients: [
@@ -1444,7 +1422,7 @@ const cocktails = [
     moods: ["sexy", "romantic"],
   },
   {
-    id: 40, name: "20th Century", spirit: "gin",
+    id: 40, name: "20th Century 二十世紀", spirit: "gin",
     badges: ["琴酒", "搖盪"],
     preview: "巧克力與柑橘的奇妙相遇",
     ingredients: [
@@ -1458,7 +1436,7 @@ const cocktails = [
     moods: ["sexy", "romantic"],
   },
   {
-    id: 41, name: "French 75", spirit: "gin",
+    id: 41, name: "French 75 法國七五", spirit: "gin",
     badges: ["琴酒", "搖盪", "香檳"],
     preview: "一戰時誕生，至今依然優雅",
     ingredients: [
@@ -1472,7 +1450,7 @@ const cocktails = [
     moods: ["romantic", "happy"],
   },
   {
-    id: 42, name: "Aviation", spirit: "gin",
+    id: 42, name: "Aviation 飛行", spirit: "gin",
     badges: ["琴酒", "搖盪"],
     preview: "Maraschino 與 Crème de Violette 帶來的紫藍天空色",
     ingredients: [
@@ -1486,7 +1464,7 @@ const cocktails = [
     moods: ["romantic", "miss"],
   },
   {
-    id: 43, name: "Rye Buck", spirit: "whiskey",
+    id: 43, name: "Rye Buck 裸麥巴克", spirit: "whiskey",
     badges: ["裸麥威士忌", "長飲"],
     preview: "薑汁啤酒賦予裸麥辛香的長飲風情",
     ingredients: [
@@ -1499,7 +1477,7 @@ const cocktails = [
     moods: ["drunk", "relax"],
   },
   {
-    id: 44, name: "Moscow Mule", spirit: "vodka",
+    id: 44, name: "Moscow Mule 莫斯科騾子", spirit: "vodka",
     badges: ["伏特加", "長飲"],
     preview: "銅杯裡的清爽薑味長飲",
     ingredients: [
@@ -1512,7 +1490,7 @@ const cocktails = [
     moods: ["happy", "drunk"],
   },
   {
-    id: 45, name: "Kangaroo", spirit: "vodka",
+    id: 45, name: "Kangaroo 袋鼠", spirit: "vodka",
     badges: ["伏特加", "攪拌", "Vodka Martini"],
     preview: "伏特加馬丁尼的正式名稱",
     ingredients: [
@@ -1524,7 +1502,7 @@ const cocktails = [
     moods: ["sexy", "relax"],
   },
   {
-    id: 46, name: "Hemingway Daiquiri", spirit: "rum",
+    id: 46, name: "Hemingway Daiquiri 海明威黛克瑞", spirit: "rum",
     badges: ["白蘭姆酒", "搖盪"],
     preview: "海明威的低糖高酒版 Daiquiri",
     ingredients: [
@@ -1538,7 +1516,7 @@ const cocktails = [
     moods: ["relax", "miss"],
   },
   {
-    id: 47, name: "Vieux Carré", spirit: "whiskey",
+    id: 47, name: "Vieux Carré 老廣場", spirit: "whiskey",
     badges: ["裸麥威士忌 + 白蘭地", "攪拌", "紐奧良"],
     preview: "新奧良法式區誕生的複雜五材料調酒",
     ingredients: [
@@ -1553,7 +1531,7 @@ const cocktails = [
     moods: ["relax", "drunk"],
   },
   {
-    id: 48, name: "Presbyterian", spirit: "whiskey",
+    id: 48, name: "Presbyterian 長老會", spirit: "whiskey",
     badges: ["威士忌", "長飲"],
     preview: "薑汁啤酒與蘇打水的二重奏",
     ingredients: [
@@ -1566,7 +1544,7 @@ const cocktails = [
     moods: ["drunk", "relax"],
   },
   {
-    id: 49, name: "Pisco Sour", spirit: "other",
+    id: 49, name: "Pisco Sour 皮斯可酸酒", spirit: "other",
     badges: ["皮斯科", "搖盪", "秘魯/智利"],
     preview: "安地斯山脈的驕傲，帶苦精圖案的蛋白沙棱",
     ingredients: [
@@ -1581,7 +1559,7 @@ const cocktails = [
     moods: ["romantic", "miss"],
   },
   {
-    id: 50, name: "Whiskey Sour", spirit: "whiskey",
+    id: 50, name: "Whiskey Sour 威士忌酸酒", spirit: "whiskey",
     badges: ["波本威士忌", "搖盪"],
     preview: "最親民的威士忌酸味調酒",
     ingredients: [
@@ -1593,95 +1571,517 @@ const cocktails = [
     method: "若加蛋白，先乾搖 30 秒。加冰再搖盪。雙重濾網濾入裝冰的岩石杯或 coupe。",
     garnish: "橙片 + 酒漬櫻桃",
     moods: ["drunk", "relax"],
+  },
+  {
+    id: 51,
+    name: "Irish Coffee 愛爾蘭咖啡",
+    spirit: "whiskey",
+    badges: ["直調", "熱飲", "浪漫"],
+    preview: "調酒師為暗戀對象調製的熱飲，威士忌與咖啡最浪漫的相遇",
+    ingredients: [
+      { name: "愛爾蘭威士忌", amount: "50ml" },
+      { name: "熱咖啡", amount: "120ml" },
+      { name: "鮮奶油", amount: "50ml" },
+      { name: "黑糖", amount: "1 tsp" },
+    ],
+    method: "將咖啡、威士忌與黑糖一同攪拌加熱（不要煮沸），倒入杯中，最後浮上一層鮮奶油。",
+    garnish: "咖啡豆",
+    moods: ["romantic", "miss"]
+  },
+  {
+    id: 52,
+    name: "Screwdriver 螺絲起子",
+    spirit: "vodka",
+    badges: ["直調", "長飲", "清爽"],
+    preview: "工人用螺絲起子攪酒的傳說，便宜大碗超下手",
+    ingredients: [
+      { name: "伏特加", amount: "50ml" },
+      { name: "柳橙汁", amount: "100ml" },
+    ],
+    method: "冰塊裝六分滿，倒入伏特加與新鮮柳橙汁，充分攪拌。",
+    garnish: "柳橙片",
+    moods: ["happy", "drunk"]
+  },
+  {
+    id: 53,
+    name: "Bloody Mary 血腥瑪麗",
+    spirit: "vodka",
+    badges: ["攪拌", "長飲", "鹹辣"],
+    preview: "世界最難喝？還是最獨特？番茄伏特加的重口味挑戰",
+    ingredients: [
+      { name: "伏特加", amount: "45ml" },
+      { name: "番茄汁", amount: "90ml" },
+      { name: "檸檬汁", amount: "15ml" },
+      { name: "伍斯特醬", amount: "2 dashes" },
+      { name: "辣椒醬 Tabasco", amount: "2 dashes" },
+      { name: "鹽、胡椒", amount: "適量" },
+    ],
+    method: "所有材料與冰塊放入攪拌杯，調整調味料至可接受風味，攪拌均勻後倒入復古杯。",
+    garnish: "鹽口、芹菜、醃橄欖",
+    moods: ["drunk", "sexy"]
+  },
+  {
+    id: 55,
+    name: "Cosmopolitan 柯夢波丹",
+    spirit: "vodka",
+    badges: ["搖盪", "短飲", "果香"],
+    preview: "Sex and the City 的指定飲料，蔓越莓粉紅讓人忍不住拍照",
+    ingredients: [
+      { name: "伏特加", amount: "40ml" },
+      { name: "君度橙酒", amount: "15ml" },
+      { name: "檸檬汁", amount: "15ml" },
+      { name: "蔓越莓汁", amount: "30ml" },
+    ],
+    method: "所有材料加冰搖盪，濾入冰鎮的馬丁尼杯。",
+    garnish: "柑橘皮",
+    moods: ["romantic", "sexy", "happy"]
+  },
+  {
+    id: 56,
+    name: "Dry Martini 乾馬丁尼",
+    spirit: "gin",
+    badges: ["攪拌", "短飲", "烈"],
+    preview: "雞尾酒之王，007龐德的最愛，純粹而強烈的酒感",
+    ingredients: [
+      { name: "琴酒", amount: "60ml" },
+      { name: "不甜香艾酒 Dry Vermouth", amount: "10ml" },
+    ],
+    method: "冰塊與所有材料放入調杯攪勻，濾冰倒入已冰鎮的馬丁尼杯。",
+    garnish: "橄欖或檸檬皮",
+    moods: ["sexy", "relax"]
+  },
+  {
+    id: 57,
+    name: "Long Island Iced Tea 長島冰茶",
+    spirit: "other",
+    badges: ["直調", "長飲", "烈"],
+    preview: "五種基酒加可樂，壞朋友的陷阱，喝到忘記自己在喝酒",
+    ingredients: [
+      { name: "伏特加", amount: "15ml" },
+      { name: "琴酒", amount: "15ml" },
+      { name: "龍舌蘭", amount: "15ml" },
+      { name: "蘭姆酒", amount: "15ml" },
+      { name: "君度橙酒", amount: "15ml" },
+      { name: "糖漿", amount: "20ml" },
+      { name: "檸檬汁", amount: "30ml" },
+      { name: "可樂", amount: "適量" },
+    ],
+    method: "除可樂外所有材料與冰塊加入高球杯攪拌，倒入可樂至顏色接近紅茶色。",
+    garnish: "檸檬片",
+    moods: ["drunk", "happy"]
+  },
+  {
+    id: 58,
+    name: "B&B 白蘭地班尼迪克丁",
+    spirit: "brandy",
+    badges: ["直調", "短飲", "重甜"],
+    preview: "白蘭地花果香加班尼迪克丁藥草感，重甜重酒感的大人味",
+    ingredients: [
+      { name: "白蘭地", amount: "45ml" },
+      { name: "班尼迪克丁", amount: "45ml" },
+    ],
+    method: "直接倒入岩石杯，加冰攪拌。",
+    garnish: "無",
+    moods: ["relax", "sexy"]
+  },
+  {
+    id: 59,
+    name: "Rusty Nail 鏽釘子",
+    spirit: "whiskey",
+    badges: ["直調", "短飲", "重甜"],
+    preview: "蘇格蘭威士忌配蜂蜜甜香，鏽釘子的大人滋味",
+    ingredients: [
+      { name: "蘇格蘭威士忌", amount: "45ml" },
+      { name: "Drambuie 吉寶香甜酒", amount: "20ml" },
+    ],
+    method: "加冰直調，攪拌均勻。",
+    garnish: "檸檬皮",
+    moods: ["relax", "drunk"]
+  },
+  {
+    id: 60,
+    name: "Clover Club 三葉草俱樂部",
+    spirit: "gin",
+    badges: ["搖盪", "短飲", "酸甜"],
+    preview: "出身男性俱樂部卻因粉紅外表變成百分百妹酒",
+    ingredients: [
+      { name: "琴酒", amount: "45ml" },
+      { name: "覆盆莓糖漿", amount: "20ml" },
+      { name: "檸檬汁", amount: "20ml" },
+      { name: "蛋白", amount: "半顆" },
+    ],
+    method: "所有材料先乾搖（不加冰）再加冰搖盪，雙重過濾倒入杯中。",
+    garnish: "覆盆莓",
+    moods: ["romantic", "happy"]
+  },
+  {
+    id: 61,
+    name: "Paper Plane 紙飛機",
+    spirit: "whiskey",
+    badges: ["搖盪", "短飲", "酸"],
+    preview: "四等份的新經典，波本加苦酒的藥草酸感",
+    ingredients: [
+      { name: "波本威士忌", amount: "20ml" },
+      { name: "Nonino Quintessentia 苦酒", amount: "20ml" },
+      { name: "Aperol 艾普羅", amount: "20ml" },
+      { name: "現榨檸檬汁", amount: "20ml" },
+    ],
+    method: "所有材料加冰搖盪，濾入冰鎮的碟型杯。",
+    garnish: "無",
+    moods: ["relax", "sexy"]
+  },
+  {
+    id: 62,
+    name: "Gin Tonic 琴通寧",
+    spirit: "gin",
+    badges: ["直調", "長飲", "清爽"],
+    preview: "藥加藥的神仙組合，清爽氣泡最好入口",
+    ingredients: [
+      { name: "琴酒", amount: "60ml" },
+      { name: "通寧水", amount: "120ml" },
+    ],
+    method: "杯中加冰，倒入琴酒，緩緩注入通寧水輕輕攪拌。",
+    garnish: "檸檬角或黃瓜片",
+    moods: ["happy", "relax"]
+  },
+  {
+    id: 63,
+    name: "Highball 高球",
+    spirit: "whiskey",
+    badges: ["直調", "長飲", "清爽"],
+    preview: "要威士忌香又要清爽，高球準沒錯",
+    ingredients: [
+      { name: "波本威士忌", amount: "60ml" },
+      { name: "氣泡水", amount: "補滿" },
+    ],
+    method: "高球杯加冰，倒入威士忌，緩緩注入氣泡水，輕攪一下。",
+    garnish: "無",
+    moods: ["relax", "happy"]
+  },
+  {
+    id: 64,
+    name: "Sex on the Beach 性感海灘",
+    spirit: "vodka",
+    badges: ["搖盪", "長飲", "果香"],
+    preview: "香香甜甜好入口，蔓越莓柳橙的熱帶風情",
+    ingredients: [
+      { name: "伏特加", amount: "40ml" },
+      { name: "桃味烈酒", amount: "20ml" },
+      { name: "蔓越莓汁", amount: "40ml" },
+      { name: "柳橙汁", amount: "40ml" },
+    ],
+    method: "所有材料加冰搖盪，倒入高球杯。",
+    garnish: "柳橙片",
+    moods: ["happy", "sexy", "romantic"]
+  },
+  {
+    id: 65,
+    name: "Tequila Sunrise 龍舌蘭日出",
+    spirit: "tequila",
+    badges: ["直調", "長飲", "果香"],
+    preview: "漂亮的紅橙漸層，幾乎沒有酒吧點不到的入門款",
+    ingredients: [
+      { name: "龍舌蘭", amount: "45ml" },
+      { name: "柳橙汁", amount: "90ml" },
+      { name: "紅石榴糖漿", amount: "15ml" },
+    ],
+    method: "杯中加冰，倒入龍舌蘭與柳橙汁攪拌，最後沿杯緣緩慢注入紅石榴糖漿形成漸層。",
+    garnish: "柳橙片、醃漬櫻桃",
+    moods: ["happy", "romantic"]
+  },
+  {
+    id: 66,
+    name: "Pornstar Martini 艷星馬丁尼",
+    spirit: "vodka",
+    badges: ["搖盪", "短飲", "果香"],
+    preview: "新鮮百香果配香草伏特加，附一杯香檳的豪華享受",
+    ingredients: [
+      { name: "香草伏特加", amount: "45ml" },
+      { name: "百香果利口酒", amount: "15ml" },
+      { name: "新鮮百香果汁", amount: "30ml" },
+      { name: "萊姆汁", amount: "15ml" },
+      { name: "香草糖漿", amount: "15ml" },
+      { name: "不甜氣泡酒/香檳", amount: "1 shot（旁搭）" },
+    ],
+    method: "除氣泡酒外所有材料加冰搖盪，濾入馬丁尼杯，旁附一小杯氣泡酒。",
+    garnish: "新鮮百香果半顆",
+    moods: ["sexy", "romantic", "happy"]
+  },
+  {
+    id: 67,
+    name: "Zombie 殭屍",
+    spirit: "rum",
+    badges: ["搖盪", "長飲", "提基"],
+    preview: "Tiki 系酒精最高的一杯，多種蘭姆酒的熱帶烈焰",
+    ingredients: [
+      { name: "高濃度蘭姆酒", amount: "30ml" },
+      { name: "白蘭姆酒", amount: "45ml" },
+      { name: "香料蘭姆酒", amount: "20ml" },
+      { name: "費勒南糖漿", amount: "15ml" },
+      { name: "現榨鳳梨汁", amount: "60ml" },
+      { name: "現榨葡萄柚汁", amount: "15ml" },
+      { name: "現榨檸檬汁", amount: "15ml" },
+      { name: "紅石榴糖漿", amount: "1 tsp" },
+      { name: "法式茴香酒", amount: "4 drops" },
+    ],
+    method: "所有材料加冰搖盪，倒入 Tiki 杯或高球杯。",
+    garnish: "薄荷葉、鳳梨片",
+    moods: ["drunk", "happy"]
+  },
+  {
+    id: 68,
+    name: "White Negroni 白尼格羅尼",
+    spirit: "gin",
+    badges: ["攪拌", "短飲", "藥草"],
+    preview: "比 Negroni 更接近中藥香的白色版，藥草感更純粹",
+    ingredients: [
+      { name: "琴酒", amount: "45ml" },
+      { name: "白香艾酒", amount: "20ml" },
+      { name: "蘇茲龍膽甜酒", amount: "20ml" },
+    ],
+    method: "所有材料加冰攪拌均勻，濾入岩石杯。",
+    garnish: "葡萄柚皮",
+    moods: ["relax", "sexy"]
+  },
+  {
+    id: 69,
+    name: "Alaska 阿拉斯加",
+    spirit: "gin",
+    badges: ["攪拌", "短飲", "藥草"],
+    preview: "冷凍琴酒配夏翠絲，融水極少的純粹烈飲",
+    ingredients: [
+      { name: "琴酒（建議冷凍）", amount: "60ml" },
+      { name: "夏翠絲（綠）", amount: "15ml" },
+    ],
+    method: "所有材料加冰攪拌，濾入冰鎮的碟型杯或馬丁尼杯。",
+    garnish: "檸檬皮",
+    moods: ["sexy", "relax"]
+  },
+  {
+    id: 70,
+    name: "Naked and Famous 一脫成名",
+    spirit: "other",
+    badges: ["搖盪", "短飲", "藥草"],
+    preview: "梅斯卡爾煙燻配夏翠絲藥草，四等份的木質烈感",
+    ingredients: [
+      { name: "梅斯卡爾酒 Mezcal", amount: "22.5ml" },
+      { name: "夏翠絲（黃）", amount: "22.5ml" },
+      { name: "艾普羅 Aperol", amount: "22.5ml" },
+      { name: "萊姆汁", amount: "22.5ml" },
+    ],
+    method: "所有材料加冰搖盪，濾入碟型杯。",
+    garnish: "無",
+    moods: ["sexy", "relax"]
+  },
+  {
+    id: 71,
+    name: "Piña Colada 鳳梨可樂達",
+    spirit: "rum",
+    badges: ["搖盪", "長飲", "果香"],
+    preview: "椰奶加鳳梨，滿滿熱帶風情的夏日代名詞",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "30ml" },
+      { name: "椰漿", amount: "30ml" },
+      { name: "新鮮鳳梨汁", amount: "90ml" },
+    ],
+    method: "所有材料加冰搖盪或用果汁機打，倒入高球杯或颶風杯。",
+    garnish: "鳳梨片、椰子片",
+    moods: ["happy", "relax", "romantic"]
+  },
+  {
+    id: 72,
+    name: "Alexander 亞歷山大",
+    spirit: "gin",
+    badges: ["搖盪", "短飲", "奶香"],
+    preview: "琴酒加白巧克力酒加鮮奶油，像液態蛋糕的濃厚奶感",
+    ingredients: [
+      { name: "琴酒", amount: "30ml" },
+      { name: "白巧克力酒", amount: "30ml" },
+      { name: "鮮奶油", amount: "30ml" },
+    ],
+    method: "所有材料加冰搖盪，濾入碟型杯。",
+    garnish: "肉荳蔻粉",
+    moods: ["romantic", "relax"]
+  },
+  {
+    id: 73,
+    name: "Ramos Gin Fizz 拉莫斯琴費士",
+    spirit: "gin",
+    badges: ["搖盪", "長飲", "奶蓋"],
+    preview: "要搖超久的費工調酒，厚厚奶蓋讓調酒師又愛又恨",
+    ingredients: [
+      { name: "琴酒", amount: "45ml" },
+      { name: "檸檬汁", amount: "15ml" },
+      { name: "萊姆汁", amount: "15ml" },
+      { name: "蛋清", amount: "30ml" },
+      { name: "糖漿", amount: "30ml" },
+      { name: "鮮奶油", amount: "60ml" },
+      { name: "橙花水", amount: "3 dashes" },
+      { name: "香草精", amount: "2 drops" },
+      { name: "蘇打水", amount: "補滿" },
+    ],
+    method: "除蘇打水外所有材料乾搖 5 分鐘，加冰再搖，濾入高球杯，緩緩注入蘇打水讓奶蓋升起。",
+    garnish: "無",
+    moods: ["relax", "romantic"]
+  },
+  {
+    id: 74,
+    name: "Eggnog 蛋酒",
+    spirit: "rum",
+    badges: ["直調", "長飲", "奶香"],
+    preview: "傳統歐洲冬日飲料，蛋奶酒的節慶暖心滋味",
+    ingredients: [
+      { name: "蘭姆酒", amount: "25ml" },
+      { name: "白蘭地", amount: "25ml" },
+      { name: "牛奶", amount: "75ml" },
+      { name: "蛋黃", amount: "半顆" },
+      { name: "細砂糖", amount: "7.5g" },
+      { name: "香草精", amount: "1/8 tsp" },
+      { name: "肉桂粉", amount: "適量" },
+      { name: "丁香粉", amount: "適量" },
+    ],
+    method: "蛋黃加糖打發，加入蘭姆酒、白蘭地、牛奶攪拌均勻，冰鎮後倒入杯中。",
+    garnish: "肉桂粉、肉荳蔻粉",
+    moods: ["romantic", "miss", "relax"]
+  },
+  {
+    id: 75,
+    name: "Espresso Martini 咖啡馬丁尼",
+    spirit: "vodka",
+    badges: ["搖盪", "短飲", "咖啡"],
+    preview: "咖啡調酒的代表，提神又微醺的完美組合",
+    ingredients: [
+      { name: "伏特加", amount: "35ml" },
+      { name: "咖啡香甜酒", amount: "20ml" },
+      { name: "濃縮咖啡 Espresso", amount: "30ml" },
+    ],
+    method: "所有材料加冰用力搖盪（要搖出泡沫），濾入馬丁尼杯。",
+    garnish: "咖啡豆 3 顆",
+    moods: ["sexy", "relax", "miss"]
+  },
+  {
+    id: 76,
+    name: "Penicillin 盤尼西林",
+    spirit: "whiskey",
+    badges: ["搖盪", "短飲", "泥煤"],
+    preview: "泥煤威士忌浮於薑蜂蜜之上，有人愛有人怕的煙燻感",
+    ingredients: [
+      { name: "調和蘇格蘭威士忌", amount: "60ml" },
+      { name: "樂加維林 16 年威士忌", amount: "7.5ml（浮層）" },
+      { name: "檸檬汁", amount: "22.5ml" },
+      { name: "蜂蜜糖漿", amount: "22.5ml" },
+      { name: "新鮮薑片", amount: "半片搗碎" },
+    ],
+    method: "除樂加維林外所有材料加薑片與冰搖盪，雙重過濾倒入岩石杯，最後用吧匙將樂加維林浮於表面。",
+    garnish: "薑片、檸檬皮",
+    moods: ["relax", "sexy", "drunk"]
   }
 ];
 
 // Image cache keyed by cocktail id
 const imageCache = {};
 
-// Map cocktail names to curated Unsplash search keywords
-const cocktailKeywords = {
-  "Old Fashioned": "old+fashioned+whiskey+cocktail",
-  "Manhattan": "manhattan+cocktail+glass",
-  "Sazerac": "sazerac+cocktail+whiskey",
-  "Negroni": "negroni+cocktail+campari",
-  "Mint Julep": "mint+julep+cocktail+mint",
-  "Tom Collins": "tom+collins+gin+cocktail",
-  "Margarita": "margarita+cocktail+lime+salt",
-  "Daiquiri": "daiquiri+rum+cocktail",
-  "Martini": "martini+cocktail+olive+glass",
-  "Brandy Alexander": "brandy+alexander+cream+cocktail",
-  "Improved Whiskey Cocktail": "whiskey+cocktail+rocks+glass",
-  "Gin Rickey": "gin+rickey+cocktail+lime",
-  "Paloma": "paloma+tequila+grapefruit+cocktail",
-  "Bee's Knees": "bees+knees+gin+honey+cocktail",
-  "Monte Carlo": "whiskey+benedictine+cocktail",
-  "Boulevardier": "boulevardier+bourbon+campari+cocktail",
-  "Mai Tai": "mai+tai+rum+tiki+cocktail",
-  "Aperol Spritz": "aperol+spritz+orange+prosecco",
-  "Champagne Cocktail": "champagne+cocktail+bubbles+glass",
-  "Pink Lady": "pink+lady+cocktail+pink+drink",
-  "Jack Rose": "jack+rose+cocktail+grenadine",
-  "Caipirinha": "caipirinha+cachaca+lime+brazil",
-  "Mexican Firing Squad": "tequila+grenadine+cocktail+red",
-  "Last Word": "last+word+gin+green+cocktail",
-  "Sidecar": "sidecar+cognac+cocktail+sugar+rim",
-  "Mojito": "mojito+rum+mint+lime+cocktail",
-  "Corpse Reviver No. 2": "corpse+reviver+gin+absinthe+cocktail",
-  "Gimlet": "gimlet+gin+lime+cocktail",
-  "Martinez": "martinez+gin+vermouth+cocktail",
-  "Singapore Sling": "singapore+sling+gin+tropical+cocktail",
-  "Silver Fizz": "gin+fizz+egg+white+foam+cocktail",
-  "Daisy": "tequila+daisy+cocktail+fizz",
-  "Jungle Bird": "jungle+bird+rum+pineapple+campari",
-  "Americano": "americano+campari+soda+cocktail",
-  "Bamboo": "bamboo+sherry+vermouth+cocktail",
-  "Dark 'n Stormy": "dark+stormy+rum+ginger+beer",
-  "Whiskey Smash": "whiskey+smash+bourbon+lemon+mint",
-  "Gin Fix": "gin+fix+pineapple+cocktail+lemon",
-  "Vesper": "vesper+martini+james+bond+cocktail",
-  "20th Century": "twentieth+century+gin+creme+de+cacao+cocktail",
-  "French 75": "french+75+champagne+gin+cocktail",
-  "Aviation": "aviation+gin+violet+purple+cocktail",
-  "Rye Buck": "rye+buck+whiskey+ginger+beer",
-  "Moscow Mule": "moscow+mule+copper+mug+ginger+beer",
-  "Kangaroo": "vodka+martini+cocktail+glass",
-  "Hemingway Daiquiri": "hemingway+daiquiri+rum+grapefruit",
-  "Vieux Carré": "vieux+carre+new+orleans+cocktail",
-  "Presbyterian": "highball+whiskey+ginger+cocktail",
-  "Pisco Sour": "pisco+sour+egg+white+cocktail+peru",
-  "Whiskey Sour": "whiskey+sour+bourbon+lemon+cocktail"
+
+
+
+
+
+const cocktailImages = {
+  'Old Fashioned 古典雞尾酒': 'images/old-fashioned.jpg',
+  'Manhattan 曼哈頓': 'images/manhattan.jpg',
+  'Sazerac 薩澤瑞克': 'images/sazerac.jpg',
+  'Negroni 尼格羅尼': 'images/negroni.jpg',
+  'Mint Julep 薄荷朱利普': 'images/mint-julep.jpg',
+  'Tom Collins 湯姆柯林斯': 'images/tom-collins.jpg',
+  'Margarita 瑪格麗特': 'images/margarita.jpg',
+  'Daiquiri 黛克瑞': 'images/daiquiri.jpg',
+  'Martini 馬丁尼': 'images/martini.jpg',
+  'Brandy Alexander 白蘭地亞歷山大': 'images/brandy-alexander.jpg',
+  'Improved Whiskey Cocktail 改良威士忌': 'images/improved-whiskey-cocktail.jpg',
+  'Gin Rickey 琴瑞奇': 'images/gin-rickey.jpg',
+  'Paloma 帕洛瑪': 'images/paloma.jpg',
+  "Bee's Knees 蜜蜂之膝": 'images/bees-knees.jpg',
+  'Monte Carlo 蒙地卡羅': 'images/monte-carlo.jpg',
+  'Boulevardier 布勒瓦迪耶': 'images/boulevardier.jpg',
+  'Mai Tai 邁泰': 'images/mai-tai.jpg',
+  'Aperol Spritz 艾普羅氣泡': 'images/aperol-spritz.jpg',
+  'Champagne Cocktail 香檳雞尾酒': 'images/champagne-cocktail.jpg',
+  'Pink Lady 粉紅佳人': 'images/pink-lady.jpg',
+  'Jack Rose 傑克玫瑰': 'images/jack-rose.jpg',
+  'Caipirinha 卡琵莉亞': 'images/caipirinha.jpg',
+  'Mexican Firing Squad 墨西哥行刑隊': 'images/mexican-firing-squad.jpg',
+  'Last Word 臨別一語': 'images/last-word.jpg',
+  'Sidecar 側車': 'images/sidecar.jpg',
+  'Mojito 莫西多': 'images/mojito.jpg',
+  'Corpse Reviver No. 2 亡者復甦二號': 'images/corpse-reviver-no-2.jpg',
+  'Gimlet 琴蕾': 'images/gimlet.jpg',
+  'Martinez 馬丁尼茲': 'images/martinez.jpg',
+  'Singapore Sling 新加坡司令': 'images/singapore-sling.jpg',
+  'Silver Fizz 銀費士': 'images/silver-fizz.jpg',
+  'Daisy 雛菊': 'images/daisy.jpg',
+  'Jungle Bird 叢林鳥': 'images/jungle-bird.jpg',
+  'Americano 美國佬': 'images/americano.jpg',
+  'Bamboo 竹子': 'images/bamboo.jpg',
+  "Dark 'n Stormy 黑暗風暴": 'images/dark-n-stormy.jpg',
+  'Whiskey Smash 威士忌斯麥許': 'images/whiskey-smash.jpg',
+  'Gin Fix 琴費克斯': 'images/gin-fix.jpg',
+  'Vesper 薇斯朋': 'images/vesper.jpg',
+  '20th Century 二十世紀': 'images/20th-century.jpg',
+  'French 75 法國七五': 'images/french-75.jpg',
+  'Aviation 飛行': 'images/aviation.jpg',
+  'Rye Buck 裸麥巴克': 'images/rye-buck.jpg',
+  'Moscow Mule 莫斯科騾子': 'images/moscow-mule.jpg',
+  'Kangaroo 袋鼠': 'images/kangaroo.jpg',
+  'Hemingway Daiquiri 海明威黛克瑞': 'images/hemingway-daiquiri.jpg',
+  'Vieux Carré 老廣場': 'images/vieux-carre.jpg',
+  'Presbyterian 長老會': 'images/presbyterian.jpg',
+  'Pisco Sour 皮斯可酸酒': 'images/pisco-sour.jpg',
+  'Whiskey Sour 威士忌酸酒': 'images/whiskey-sour.jpg',
+  'Irish Coffee 愛爾蘭咖啡': 'images/irish-coffee.jpg',
+  'Screwdriver 螺絲起子': 'images/screwdriver.jpg',
+  'Bloody Mary 血腥瑪麗': 'images/bloody-mary.jpg',
+  'Cosmopolitan 柯夢波丹': 'images/cosmopolitan.jpg',
+  'Dry Martini 乾馬丁尼': 'images/dry-martini.jpg',
+  'Long Island Iced Tea 長島冰茶': 'images/long-island-iced-tea.jpg',
+  'B&B 白蘭地班尼迪克丁': 'images/b-and-b.jpg',
+  'Rusty Nail 鏽釘子': 'images/rusty-nail.jpg',
+  'Clover Club 三葉草俱樂部': 'images/clover-club.jpg',
+  'Paper Plane 紙飛機': 'images/paper-plane.jpg',
+  'Gin Tonic 琴通寧': 'images/gin-tonic.jpg',
+  'Highball 高球': 'images/highball.jpg',
+  'Sex on the Beach 性感海灘': 'images/sex-on-the-beach.jpg',
+  'Tequila Sunrise 龍舌蘭日出': 'images/tequila-sunrise.jpg',
+  'Pornstar Martini 艷星馬丁尼': 'images/pornstar-martini.jpg',
+  'Zombie 殭屍': 'images/zombie.jpg',
+  'White Negroni 白尼格羅尼': 'images/white-negroni.jpg',
+  'Alaska 阿拉斯加': 'images/alaska.jpg',
+  'Naked and Famous 一脫成名': 'images/naked-and-famous.jpg',
+  'Piña Colada 鳳梨可樂達': 'images/pina-colada.jpg',
+  'Alexander 亞歷山大': 'images/alexander.jpg',
+  'Ramos Gin Fizz 拉莫斯琴費士': 'images/ramos-gin-fizz.jpg',
+  'Eggnog 蛋酒': 'images/eggnog.jpg',
+  'Espresso Martini 咖啡馬丁尼': 'images/espresso-martini.jpg',
+  'Penicillin 盤尼西林': 'images/penicillin.jpg',
 };
 
-function getImageUrl(cocktail) {
-  const keywords = cocktailKeywords[cocktail.name] || 
-    encodeURIComponent(cocktail.name.toLowerCase()) + '+cocktail+drink';
-  // Use sig parameter to get consistent image for each cocktail
-  return `https://source.unsplash.com/featured/600x400/?${keywords}&sig=${cocktail.id * 7919}`;
+function getImageUrl(name) {
+  return cocktailImages[name] || '';
 }
 
+
 function loadPhotoForCard(el, cocktail) {
-  const wrap = el.querySelector('.card-photo-wrap');
   const skeleton = el.querySelector('.photo-skeleton');
   const img = el.querySelector('.card-photo-img');
-  if (!wrap || img.dataset.loaded === 'true') return;
-
-  const url = getImageUrl(cocktail);
+  if (!img || img.dataset.loaded === 'true') return;
+  const url = getImageUrl(cocktail.name);
+  if (!url) { if (skeleton) skeleton.textContent = ''; return; }
   img.src = url;
   img.onload = () => {
     img.classList.add('loaded');
     img.dataset.loaded = 'true';
     if (skeleton) skeleton.classList.add('hidden');
   };
-  img.onerror = () => {
-    // fallback to generic cocktail image
-    img.src = `https://source.unsplash.com/featured/600x400/?cocktail,drink,bar&sig=${cocktail.id * 1337}`;
-    img.onload = () => {
-      img.classList.add('loaded');
-      img.dataset.loaded = 'true';
-      if (skeleton) skeleton.classList.add('hidden');
-    };
-  };
+  img.onerror = () => { if (skeleton) skeleton.style.display = 'none'; };
 }
 
 function renderCards(list) {
@@ -1710,12 +2110,7 @@ function renderCards(list) {
         <div class="section-label">製作方式</div>
         <p class="method-text">${c.method}</p>
         <div class="garnish-row"><span>裝飾</span>${c.garnish}</div>
-        <div class="section-label" style="margin-top:1.25rem">成品圖</div>
-        <div class="card-photo-wrap">
-          <div class="photo-skeleton">載入圖片中…</div>
-          <img class="card-photo-img" alt="${c.name} cocktail" src="" />
-          <div class="photo-credit">Photo via <a href="https://unsplash.com?utm_source=cocktail_guide&utm_medium=referral" target="_blank">Unsplash</a></div>
-        </div>
+
       </div>
       <div class="toggle-icon">
         <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
@@ -1732,11 +2127,11 @@ function renderCards(list) {
 
     el.addEventListener('click', () => {
       const wasExpanded = el.classList.contains('expanded');
+      if (!wasExpanded) loadPhotoForCard(el, c);
       el.classList.toggle('expanded');
       const hBar = el.querySelector('.h-bar');
       if (el.classList.contains('expanded')) {
         hBar.style.display = 'none';
-        if (!wasExpanded) loadPhotoForCard(el, c);
       } else {
         hBar.style.display = '';
       }
@@ -1745,9 +2140,7 @@ function renderCards(list) {
   });
 }
 
-let currentFilter = 'all';
-let currentSearch = '';
-let currentMood = null;
+
 
 const moodLabels = {
   happy:    '😄 開心',
@@ -1828,9 +2221,6 @@ document.getElementById('search').addEventListener('input', e => {
 
 
 // ── 收藏 ──────────────────────────────────────────
-let favourites = new Set();
-let viewingFavs = false;
-let currentModalCocktail = null;
 
 function updateFavCount() {
   const el = document.getElementById('fav-count');
