@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 經典調酒指南</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --cream: #f5efe3;
+    --amber: #c8882a;
+    --amber-light: #e8b24a;
+    --amber-dark: #8a5a10;
+    --copper: #b5622a;
+    --smoke: #6b5f4e;
+    --paper: #ede5d2;
+    --gold: #d4a853;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--ink);
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(200,136,42,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(181,98,42,0.06) 0%, transparent 60%);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    position: relative;
+  }
+
+  header::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: var(--amber);
+    margin: 0 auto 1.5rem;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--amber-light);
+  }
+
+  .header-sub {
+    font-size: 0.85rem;
+    color: var(--smoke);
+    letter-spacing: 0.05em;
+    margin-top: 1rem;
+  }
+
+  .controls {
+    max-width: 900px;
+    margin: 2.5rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--smoke);
+    width: 16px;
+    height: 16px;
+  }
+
+  #search {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,136,42,0.2);
+    border-radius: 4px;
+    padding: 0.65rem 1rem 0.65rem 2.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #search::placeholder { color: var(--smoke); }
+  #search:focus { border-color: var(--amber); }
+
+  .filter-btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid rgba(200,136,42,0.25);
+    border-radius: 3px;
+    padding: 0.5rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--smoke);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ink);
+  }
+
+  .count-bar {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--smoke);
+    margin: 1.5rem auto 0;
+    letter-spacing: 0.05em;
+  }
+
+  .count-bar span { color: var(--amber); }
+
+  .grid {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #221a0e, #1a1208);
+    border: 1px solid rgba(200,136,42,0.15);
+    border-radius: 6px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .card:hover {
+    border-color: rgba(200,136,42,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card.expanded {
+    border-color: var(--amber);
+  }
+
+  .card-num {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: var(--amber-dark);
+    margin-bottom: 0.5rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .badge {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .badge-spirit {
+    color: var(--amber-light);
+    border-color: rgba(200,136,42,0.3);
+    background: rgba(200,136,42,0.08);
+  }
+
+  .badge-method {
+    color: var(--copper);
+    border-color: rgba(181,98,42,0.3);
+    background: rgba(181,98,42,0.08);
+  }
+
+  .card-preview {
+    font-size: 0.8rem;
+    color: var(--smoke);
+    line-height: 1.5;
+  }
+
+  .card-expand {
+    display: none;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(200,136,42,0.12);
+    animation: slideDown 0.25s ease;
+  }
+
+  .card.expanded .card-expand { display: block; }
+
+  .section-label {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,136,42,0.15);
+  }
+
+  .ingredients-list {
+    list-style: none;
+    margin-bottom: 1.25rem;
+  }
+
+  .ingredients-list li {
+    font-size: 0.82rem;
+    color: #c8b99a;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .ingredients-list li:last-child { border-bottom: none; }
+
+  .ing-name { color: var(--cream); }
+  .ing-amount { 
+    color: var(--amber); 
+    font-size: 0.75rem;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .method-text {
+    font-size: 0.82rem;
+    color: #c8b99a;
+    line-height: 1.7;
+  }
+
+  .garnish-row {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.78rem;
+    color: var(--smoke);
+  }
+
+  .garnish-row span:first-child {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber-dark);
+    white-space: nowrap;
+  }
+
+  /* ── 成品圖片 ── */
+  .card-photo-wrap {
+    margin-top: 1.25rem;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+  }
+
+  .card-photo-wrap img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .card-photo-wrap img.loaded {
+    opacity: 1;
+  }
+
+  .card-photo-wrap:hover img {
+    transform: scale(1.04);
+  }
+
+  .photo-skeleton {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(90deg, #1e1508 25%, #2a1e0a 50%, #1e1508 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    position: absolute;
+    top: 0; left: 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber-dark);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+  }
+
+  .photo-skeleton.hidden { display: none; }
+
+  .photo-credit {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 0.4rem 0.6rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.5);
+    text-align: right;
+  }
+
+  .photo-credit a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .toggle-icon {
+    position: absolute;
+    bottom: 1.25rem;
+    right: 1.5rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,136,42,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--amber-dark);
+  }
+
+  .card:hover .toggle-icon { border-color: var(--amber); color: var(--amber); }
+  .card.expanded .toggle-icon { background: var(--amber); color: var(--ink); border-color: var(--amber); transform: rotate(45deg); }
+
+  .hidden { display: none !important; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+
+  /* ── 心情篩選 ── */
+  .mood-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .mood-label {
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--smoke);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mood-label::before,
+  .mood-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,136,42,0.12);
+  }
+
+  .mood-btns {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mood-btn {
+    background: transparent;
+    border: 1px solid rgba(200,136,42,0.18);
+    border-radius: 100px;
+    padding: 0.55rem 1.2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--smoke);
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mood-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.22s;
+    border-radius: 100px;
+  }
+
+  .mood-btn:hover {
+    color: var(--cream);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  .mood-btn.active {
+    color: var(--ink);
+    font-weight: 500;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  .mood-btn .mood-emoji { font-size: 1rem; line-height: 1; }
+
+  /* Individual mood colours */
+  .mood-happy  { --mc: #f5c842; }
+  .mood-relax  { --mc: #6bcfb5; }
+  .mood-miss   { --mc: #a78bfa; }
+  .mood-sexy   { --mc: #f472b6; }
+  .mood-romantic { --mc: #fb7185; }
+  .mood-drunk  { --mc: #f97316; }
+
+  .mood-btn:hover  { border-color: var(--mc); color: var(--mc); }
+  .mood-btn.active { background: var(--mc); border-color: var(--mc); }
+  .mood-btn.active::before { opacity: 0; }
+
+  /* mood tag on card */
+  .mood-tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+  }
+
+  .mood-tag {
+    font-size: 0.6rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 100px;
+    opacity: 0.7;
+  }
+
+  .mood-tag.happy    { background: rgba(245,200,66,0.15);  color: #f5c842; border: 1px solid rgba(245,200,66,0.25); }
+  .mood-tag.relax    { background: rgba(107,207,181,0.15); color: #6bcfb5; border: 1px solid rgba(107,207,181,0.25); }
+  .mood-tag.miss     { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+  .mood-tag.sexy     { background: rgba(244,114,182,0.15); color: #f472b6; border: 1px solid rgba(244,114,182,0.25); }
+  .mood-tag.romantic { background: rgba(251,113,133,0.15); color: #fb7185; border: 1px solid rgba(251,113,133,0.25); }
+  .mood-tag.drunk    { background: rgba(249,115,22,0.15);  color: #f97316; border: 1px solid rgba(249,115,22,0.25); }
+
+  .card.mood-highlight {
+    border-color: rgba(200,136,42,0.6);
+    box-shadow: 0 0 0 1px rgba(200,136,42,0.3), 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .card.mood-dim {
+    opacity: 0.25;
+    filter: grayscale(0.5);
+    transform: none !important;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.7rem;
+    color: rgba(107,95,78,0.5);
+    border-top: 1px solid rgba(200,136,42,0.08);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">The Educated Barfly · 經典調酒全集</p>
+  <h1>50 款你必須學會的<br><em>經典調酒</em></h1>
+  <p class="header-sub">成分 · 比例 · 製作方式 — 點擊卡片展開詳細配方</p>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="搜尋調酒名稱或基酒…">
+  </div>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all">全部</button>
+    <button class="filter-btn" data-filter="whiskey">威士忌</button>
+    <button class="filter-btn" data-filter="gin">琴酒</button>
+    <button class="filter-btn" data-filter="rum">蘭姆酒</button>
+    <button class="filter-btn" data-filter="tequila">龍舌蘭</button>
+    <button class="filter-btn" data-filter="brandy">白蘭地</button>
+    <button class="filter-btn" data-filter="vodka">伏特加</button>
+    <button class="filter-btn" data-filter="other">其他</button>
+  </div>
+</div>
+<div class="mood-section">
+  <p class="mood-label">今晚的心情是？</p>
+  <div class="mood-btns">
+    <button class="mood-btn mood-happy"    data-mood="happy">   <span class="mood-emoji">😄</span> 開心 </button>
+    <button class="mood-btn mood-relax"    data-mood="relax">   <span class="mood-emoji">🌿</span> 放鬆 </button>
+    <button class="mood-btn mood-miss"     data-mood="miss">    <span class="mood-emoji">🌙</span> 思念 </button>
+    <button class="mood-btn mood-sexy"     data-mood="sexy">    <span class="mood-emoji">🔥</span> 性愛 </button>
+    <button class="mood-btn mood-romantic" data-mood="romantic"><span class="mood-emoji">🌹</span> 浪漫 </button>
+    <button class="mood-btn mood-drunk"    data-mood="drunk">   <span class="mood-emoji">🥃</span> 就是要爛醉 </button>
+  </div>
+</div>
+<p class="count-bar">顯示 <span id="count">50</span> / 50 款調酒</p>
+
+<div class="grid" id="grid"></div>
+
+<footer>配方參考自 The Educated Barfly YouTube 頻道 · 僅供學習參考</footer>
+
+<script>
+const cocktails = [
+  {
+    id: 1, name: "Old Fashioned", spirit: "whiskey",
+    badges: ["波本/裸麥威士忌", "攪拌"],
+    preview: "調酒界的定義之作，簡單而深刻",
+    ingredients: [
+      { name: "波本或裸麥威士忌", amount: "2 oz" },
+      { name: "Demerara 糖漿 (2:1)", amount: "1/4 oz" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+    ],
+    method: "將所有材料放入攪拌杯，加冰攪拌至充分冷卻（約 20-30 秒）。濾入裝有大冰塊的老式杯中。以橙皮捲在杯口輕刮後放入裝飾。",
+    garnish: "橙皮捲 + Luxardo 酒漬櫻桃",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 2, name: "Manhattan", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌"],
+    preview: "紐約都會風情，優雅而有深度",
+    ingredients: [
+      { name: "裸麥或波本威士忌", amount: "2 oz" },
+      { name: "甜型苦艾酒", amount: "1 oz" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+    ],
+    method: "所有材料加冰攪拌至冷卻。濾入冷藏過的雞尾酒杯（coupe 或 Nick & Nora）。",
+    garnish: "Luxardo 酒漬櫻桃",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 3, name: "Sazerac", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌", "經典紐奧良"],
+    preview: "新奧良最古老的調酒之一",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "2 oz" },
+      { name: "Demerara 糖漿", amount: "1/4 oz" },
+      { name: "Peychaud's 苦精", amount: "3 dashes" },
+      { name: "Angostura 苦精", amount: "1 dash" },
+      { name: "苦艾酒（潤杯用）", amount: "適量" },
+    ],
+    method: "先以苦艾酒潤一個老式杯，倒掉多餘。其他材料加冰攪拌後濾入杯中（不加冰）。以檸檬皮捲在杯口輕刮後捨棄（不放入杯中）。",
+    garnish: "檸檬皮捲（不入杯）",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 4, name: "Negroni", spirit: "gin",
+    badges: ["琴酒", "攪拌", "義式"],
+    preview: "苦甜平衡的完美三等分",
+    ingredients: [
+      { name: "琴酒", amount: "1 oz" },
+      { name: "甜型苦艾酒", amount: "1 oz" },
+      { name: "Campari", amount: "1 oz" },
+    ],
+    method: "所有材料加冰攪拌至冷卻。濾入裝有大冰塊的老式杯中。",
+    garnish: "橙皮捲",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 5, name: "Mint Julep", spirit: "whiskey",
+    badges: ["波本威士忌", "搗壓"],
+    preview: "肯塔基德比的官方飲料",
+    ingredients: [
+      { name: "波本威士忌", amount: "2.5 oz" },
+      { name: "Simple Syrup (1:1)", amount: "1/2 oz" },
+      { name: "新鮮薄荷葉", amount: "8-10 片" },
+    ],
+    method: "薄荷葉與糖漿放入銀杯（julep cup）中輕輕搗壓（釋放香氣而非破壞葉片）。加入波本威士忌，填滿碎冰並攪拌至杯外結霜。插入薄荷枝讓香氣四溢。",
+    garnish: "大束新鮮薄荷枝",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 6, name: "Tom Collins", spirit: "gin",
+    badges: ["琴酒", "搖盪", "長飲"],
+    preview: "清爽的柑橘氣泡長飲",
+    ingredients: [
+      { name: "琴酒", amount: "1.5 oz" },
+      { name: "檸檬汁（新鮮）", amount: "1 oz" },
+      { name: "Simple Syrup", amount: "3/4 oz" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "將琴酒、檸檬汁、糖漿加冰搖盪。濾入裝滿冰塊的 Collins 杯，補上蘇打水輕攪。",
+    garnish: "檸檬片 + 酒漬櫻桃",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 7, name: "Margarita", spirit: "tequila",
+    badges: ["龍舌蘭", "搖盪"],
+    preview: "最受歡迎的龍舌蘭調酒",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "1 oz" },
+      { name: "君度橙酒", amount: "1/2 oz" },
+      { name: "Agave 糖漿", amount: "1/4 oz" },
+    ],
+    method: "杯口用萊姆汁潤濕後沾鹽（半圈）。所有材料加冰大力搖盪。濾入岩石杯，可加冰塊或不加。",
+    garnish: "鹽口 + 萊姆角",
+    moods: ["happy", "sexy"],
+  },
+  {
+    id: 8, name: "Daiquiri", spirit: "rum",
+    badges: ["白蘭姆酒", "搖盪", "古巴"],
+    preview: "三種材料的平衡藝術",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "3/4 oz" },
+      { name: "Simple Syrup (2:1)", amount: "3/4 oz" },
+    ],
+    method: "所有材料加冰用力搖盪至充分冷卻。雙重濾網（double strain）濾入冷藏的 coupe 杯中。",
+    garnish: "萊姆皮捲（可省略）",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 9, name: "Martini", spirit: "gin",
+    badges: ["琴酒", "攪拌"],
+    preview: "調酒之王，在苦艾酒比例中取得平衡",
+    ingredients: [
+      { name: "琴酒", amount: "2.5 oz" },
+      { name: "Dry 苦艾酒", amount: "1/2 oz" },
+      { name: "橙味苦精（可選）", amount: "1 dash" },
+    ],
+    method: "所有材料加冰充分攪拌（30-40 秒）。濾入冷藏的馬丁尼杯或 coupe。以檸檬皮捲輕刮杯口。",
+    garnish: "檸檬皮捲 或 橄欖",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 10, name: "Brandy Alexander", spirit: "brandy",
+    badges: ["白蘭地", "搖盪", "甜點風"],
+    preview: "絲滑奶香的甜點調酒",
+    ingredients: [
+      { name: "干邑白蘭地", amount: "1.5 oz" },
+      { name: "棕色可可甜酒", amount: "1 oz" },
+      { name: "鮮奶油", amount: "1 oz" },
+    ],
+    method: "所有材料加冰搖盪至充分冷卻（奶油充分乳化）。雙重濾網濾入 coupe 杯。表面輕磨肉荳蔻。",
+    garnish: "現磨肉荳蔻",
+    moods: ["relax", "romantic"],
+  },
+  {
+    id: 11, name: "Improved Whiskey Cocktail", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌", "19世紀"],
+    preview: "Old Fashioned 的進化版，加入苦艾酒與黃色沙特勒斯",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "2 oz" },
+      { name: "Maraschino 酒", amount: "1/4 oz" },
+      { name: "Absinthe（潤杯）", amount: "少許" },
+      { name: "Simple Syrup", amount: "1/4 oz" },
+      { name: "Peychaud's + Angostura", amount: "各1 dash" },
+    ],
+    method: "用 absinthe 潤杯（rinse）。其他材料加冰攪拌，濾入冰杯中。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 12, name: "Gin Rickey", spirit: "gin",
+    badges: ["琴酒", "長飲", "無甜"],
+    preview: "清爽無糖的氣泡萊姆長飲",
+    ingredients: [
+      { name: "琴酒", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "1/2 oz" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "在 highball 杯中加冰，倒入琴酒和萊姆汁，補上蘇打水輕攪。",
+    garnish: "萊姆角",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 13, name: "Paloma", spirit: "tequila",
+    badges: ["龍舌蘭", "長飲", "墨西哥"],
+    preview: "墨西哥人比 Margarita 更常喝的國民飲料",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "2 oz" },
+      { name: "葡萄柚汁（新鮮）", amount: "1.5 oz" },
+      { name: "萊姆汁", amount: "1/2 oz" },
+      { name: "Agave 糖漿", amount: "1/4 oz" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "杯口沾鹽（可選）。材料加冰搖盪，濾入裝冰的 highball 杯，補蘇打水。",
+    garnish: "鹽口 + 葡萄柚片",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 14, name: "Bee's Knees", spirit: "gin",
+    badges: ["琴酒", "搖盪", "禁酒時代"],
+    preview: "蜂蜜與柑橘讓琴酒更閃耀",
+    ingredients: [
+      { name: "琴酒", amount: "2 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+      { name: "蜂蜜糖漿 (2:1)", amount: "3/4 oz" },
+    ],
+    method: "所有材料加冰充分搖盪（蜂蜜需搖勻）。雙重濾網濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["happy", "romantic"],
+  },
+  {
+    id: 15, name: "Monte Carlo", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌"],
+    preview: "加入 Bénédictine 的 Manhattan 變奏",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "2 oz" },
+      { name: "Bénédictine", amount: "1/2 oz" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+    ],
+    method: "所有材料加冰攪拌至冷卻。濾入 coupe 或 Nick & Nora 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "romantic"],
+  },
+  {
+    id: 16, name: "Boulevardier", spirit: "whiskey",
+    badges: ["波本威士忌", "攪拌"],
+    preview: "以波本取代琴酒的 Negroni 兄弟",
+    ingredients: [
+      { name: "波本威士忌", amount: "1.5 oz" },
+      { name: "甜型苦艾酒", amount: "1 oz" },
+      { name: "Campari", amount: "1 oz" },
+    ],
+    method: "所有材料加冰攪拌。濾入裝有大冰塊的老式杯或 coupe 杯。",
+    garnish: "橙皮捲 或 酒漬櫻桃",
+    moods: ["relax", "sexy"],
+  },
+  {
+    id: 17, name: "Mai Tai", spirit: "rum",
+    badges: ["蘭姆酒", "搖盪", "提基"],
+    preview: "奧格尼的塔希提語：「好極了！」",
+    ingredients: [
+      { name: "陳年牙買加蘭姆酒", amount: "1 oz" },
+      { name: "陳年巴巴多斯蘭姆酒", amount: "1 oz" },
+      { name: "橙皮甜酒 (Curaçao)", amount: "1/2 oz" },
+      { name: "Orgeat（杏仁糖漿）", amount: "1/2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "3/4 oz" },
+    ],
+    method: "所有材料加碎冰搖盪。直接倒入 tiki 杯或雙層岩石杯，補碎冰。",
+    garnish: "薄荷枝 + 萊姆角 + 鳳梨片",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 18, name: "Aperol Spritz", spirit: "other",
+    badges: ["Aperol", "氣泡", "義式"],
+    preview: "義大利夏日午後的下午茶時光",
+    ingredients: [
+      { name: "Prosecco 氣泡酒", amount: "3 oz" },
+      { name: "Aperol", amount: "2 oz" },
+      { name: "蘇打水", amount: "1 splash" },
+    ],
+    method: "大型葡萄酒杯加大冰塊，依序倒入 Prosecco、Aperol，最後加少許蘇打水輕攪。",
+    garnish: "橙片",
+    moods: ["happy", "romantic"],
+  },
+  {
+    id: 19, name: "Champagne Cocktail", spirit: "other",
+    badges: ["香檳", "氣泡", "經典"],
+    preview: "19世紀的優雅氣泡傑作",
+    ingredients: [
+      { name: "香檳或氣泡酒", amount: "適量" },
+      { name: "方糖", amount: "1 顆" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+      { name: "干邑白蘭地（可選）", amount: "1/4 oz" },
+    ],
+    method: "將苦精滴在方糖上放入香檳杯底部，加入干邑，緩緩倒入冰鎮香檳（不攪拌，讓糖慢慢溶化產生氣泡）。",
+    garnish: "檸檬皮捲",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 20, name: "Pink Lady", spirit: "gin",
+    badges: ["琴酒", "搖盪", "蛋白"],
+    preview: "粉嫩絲滑的禁酒時代經典",
+    ingredients: [
+      { name: "琴酒", amount: "1.5 oz" },
+      { name: "蘋果白蘭地", amount: "1/2 oz" },
+      { name: "檸檬汁", amount: "3/4 oz" },
+      { name: "Grenadine", amount: "1/2 oz" },
+      { name: "蛋白", amount: "1 個" },
+    ],
+    method: "先乾搖（不加冰）30 秒使蛋白起泡。加冰再搖 20 秒。雙重濾網濾入 coupe 杯。",
+    garnish: "冷凍覆盆莓 或 無",
+    moods: ["romantic", "sexy"],
+  },
+  {
+    id: 21, name: "Jack Rose", spirit: "brandy",
+    badges: ["蘋果白蘭地", "搖盪"],
+    preview: "紅石榴配蘋果白蘭地的美式經典",
+    ingredients: [
+      { name: "Applejack / 蘋果白蘭地", amount: "2 oz" },
+      { name: "萊姆汁或檸檬汁", amount: "3/4 oz" },
+      { name: "Grenadine（紅石榴糖漿）", amount: "1/2 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "萊姆皮捲",
+    moods: ["relax", "miss"],
+  },
+  {
+    id: 22, name: "Caipirinha", spirit: "other",
+    badges: ["卡沙夏", "搗壓", "巴西"],
+    preview: "巴西國酒，簡單直接的熱帶風情",
+    ingredients: [
+      { name: "Cachaça（卡沙夏）", amount: "2 oz" },
+      { name: "新鮮萊姆", amount: "半顆切塊" },
+      { name: "細砂糖", amount: "2 tsp" },
+    ],
+    method: "萊姆塊與糖放入岩石杯搗壓，擠出汁液並釋放精油。加碎冰，倒入卡沙夏，攪拌均勻。",
+    garnish: "萊姆角",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 23, name: "Mexican Firing Squad", spirit: "tequila",
+    badges: ["龍舌蘭", "搖盪"],
+    preview: "Charles Baker 1946 年配方，鮮豔而複雜",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "3/4 oz" },
+      { name: "Grenadine", amount: "1/2 oz" },
+      { name: "Angostura 苦精", amount: "4 dashes" },
+      { name: "蘇打水", amount: "1 splash" },
+    ],
+    method: "除蘇打水外加冰搖盪。濾入裝冰的 highball 杯，補少許蘇打水。",
+    garnish: "萊姆角",
+    moods: ["drunk", "happy"],
+  },
+  {
+    id: 24, name: "Last Word", spirit: "gin",
+    badges: ["琴酒", "搖盪", "禁酒時代"],
+    preview: "四種材料各佔四分之一的完美平衡",
+    ingredients: [
+      { name: "琴酒", amount: "3/4 oz" },
+      { name: "青色沙特勒斯（Chartreuse Verte）", amount: "3/4 oz" },
+      { name: "Maraschino 酒", amount: "3/4 oz" },
+      { name: "萊姆汁（新鮮）", amount: "3/4 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "萊姆皮捲（可省略）",
+    moods: ["sexy", "relax"],
+  },
+  {
+    id: 25, name: "Sidecar", spirit: "brandy",
+    badges: ["干邑白蘭地", "搖盪"],
+    preview: "1920年代巴黎的精緻奶油甜酒",
+    ingredients: [
+      { name: "干邑白蘭地（VS 或以上）", amount: "2 oz" },
+      { name: "君度橙酒", amount: "3/4 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+    ],
+    method: "杯口可選擇沾糖邊。所有材料加冰搖盪，雙重濾網濾入 coupe 杯。",
+    garnish: "糖口（可選）+ 橙皮捲",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 26, name: "Mojito", spirit: "rum",
+    badges: ["白蘭姆酒", "搗壓", "古巴"],
+    preview: "哈瓦那最受歡迎的清涼特調",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "1 oz" },
+      { name: "Simple Syrup", amount: "3/4 oz" },
+      { name: "新鮮薄荷葉", amount: "8-10 片" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "薄荷葉與糖漿放入杯中輕搗（不要過度搗碎）。加入蘭姆酒與萊姆汁，加碎冰，補蘇打水，輕攪。",
+    garnish: "薄荷枝 + 萊姆角",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 27, name: "Corpse Reviver No. 2", spirit: "gin",
+    badges: ["琴酒", "搖盪", "解宿醉"],
+    preview: "「三杯下肚，起死回生」",
+    ingredients: [
+      { name: "琴酒", amount: "3/4 oz" },
+      { name: "Cointreau 橙酒", amount: "3/4 oz" },
+      { name: "Lillet Blanc", amount: "3/4 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+      { name: "Absinthe（潤杯）", amount: "少許" },
+    ],
+    method: "用 absinthe 潤 coupe 杯。其他材料加冰搖盪，雙重濾網濾入杯中。",
+    garnish: "橙皮捲",
+    moods: ["drunk", "relax"],
+  },
+  {
+    id: 28, name: "Gimlet", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "新鮮萊姆帶出琴酒植物香氣",
+    ingredients: [
+      { name: "琴酒", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "3/4 oz" },
+      { name: "Simple Syrup", amount: "1/2 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯或加冰的岩石杯。",
+    garnish: "萊姆皮捲",
+    moods: ["relax", "happy"],
+  },
+  {
+    id: 29, name: "Martinez", spirit: "gin",
+    badges: ["老湯姆琴酒", "攪拌", "Martini 前身"],
+    preview: "馬丁尼的前身，更甜更圓潤",
+    ingredients: [
+      { name: "老湯姆琴酒（Old Tom Gin）", amount: "1.5 oz" },
+      { name: "甜型苦艾酒", amount: "1.5 oz" },
+      { name: "Maraschino 酒", amount: "1/4 oz" },
+      { name: "橙味苦精", amount: "2 dashes" },
+    ],
+    method: "所有材料加冰攪拌。濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 30, name: "Singapore Sling", spirit: "gin",
+    badges: ["琴酒", "搖盪", "新加坡"],
+    preview: "萊佛士酒店 1915 年誕生的熱帶長飲",
+    ingredients: [
+      { name: "琴酒", amount: "1.5 oz" },
+      { name: "Cherry Heering", amount: "1/2 oz" },
+      { name: "Cointreau", amount: "1/4 oz" },
+      { name: "Bénédictine", amount: "1/4 oz" },
+      { name: "鳳梨汁", amount: "4 oz" },
+      { name: "萊姆汁", amount: "1/2 oz" },
+      { name: "Angostura 苦精", amount: "1 dash" },
+      { name: "Grenadine", amount: "1/3 oz" },
+    ],
+    method: "所有材料加冰搖盪。濾入裝冰的 highball 杯，補蘇打水（可選）。",
+    garnish: "鳳梨片 + 酒漬櫻桃",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 31, name: "Silver Fizz", spirit: "gin",
+    badges: ["琴酒", "搖盪", "蛋白"],
+    preview: "Gin Fizz 的絲滑蛋白升級版",
+    ingredients: [
+      { name: "琴酒", amount: "2 oz" },
+      { name: "檸檬汁（新鮮）", amount: "1 oz" },
+      { name: "Simple Syrup", amount: "3/4 oz" },
+      { name: "蛋白", amount: "1 個" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "先乾搖 30 秒。加冰再搖 15 秒。雙重濾網濾入不加冰的 Collins 杯，緩緩補蘇打水讓蛋白泡沫浮起。",
+    garnish: "無（保留泡沫美感）",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 32, name: "Daisy", spirit: "tequila",
+    badges: ["龍舌蘭", "搖盪"],
+    preview: "Margarita 的前身，以 soda 延伸",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "2 oz" },
+      { name: "柳橙汁或檸檬汁", amount: "3/4 oz" },
+      { name: "Simple Syrup", amount: "1/4 oz" },
+      { name: "Grenadine", amount: "1 tsp" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "除蘇打水外加冰搖盪。濾入裝冰的 highball 杯，補蘇打水。",
+    garnish: "橙片 + 薄荷",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 33, name: "Jungle Bird", spirit: "rum",
+    badges: ["深色蘭姆酒", "搖盪", "提基"],
+    preview: "以 Campari 入提基——意外的傑作",
+    ingredients: [
+      { name: "黑蘭姆酒（Jamaican）", amount: "1.5 oz" },
+      { name: "Campari", amount: "3/4 oz" },
+      { name: "鳳梨汁", amount: "1.5 oz" },
+      { name: "萊姆汁（新鮮）", amount: "1/2 oz" },
+      { name: "Simple Syrup", amount: "1/2 oz" },
+    ],
+    method: "所有材料加冰搖盪。濾入裝碎冰的 tiki 杯或岩石杯。",
+    garnish: "鳳梨葉 + 萊姆角",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 34, name: "Americano", spirit: "other",
+    badges: ["Campari", "攪拌", "義式"],
+    preview: "Negroni 的無酒精前輩，James Bond 的第一杯",
+    ingredients: [
+      { name: "Campari", amount: "1.5 oz" },
+      { name: "甜型苦艾酒", amount: "1.5 oz" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "在裝冰的 highball 杯中加入 Campari 和苦艾酒，補蘇打水輕攪。",
+    garnish: "橙片",
+    moods: ["relax", "romantic"],
+  },
+  {
+    id: 35, name: "Bamboo", spirit: "other",
+    badges: ["苦艾酒", "攪拌", "低酒精"],
+    preview: "日本橫濱 1895 年誕生的低酒精精品",
+    ingredients: [
+      { name: "Dry 苦艾酒（Fino Sherry）", amount: "1.5 oz" },
+      { name: "甜型苦艾酒", amount: "1.5 oz" },
+      { name: "橙味苦精", amount: "2 dashes" },
+      { name: "Angostura 苦精", amount: "1 dash" },
+    ],
+    method: "所有材料加冰充分攪拌（較長時間）。濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "miss"],
+  },
+  {
+    id: 36, name: "Dark 'n Stormy", spirit: "rum",
+    badges: ["深色蘭姆酒", "長飲", "百慕達"],
+    preview: "Gosling's 蘭姆酒的官方指定喝法",
+    ingredients: [
+      { name: "Gosling's Black Seal 蘭姆酒", amount: "2 oz" },
+      { name: "Ginger Beer", amount: "4-6 oz" },
+      { name: "萊姆汁", amount: "1/2 oz" },
+    ],
+    method: "Highball 杯加冰，倒入薑汁啤酒和萊姆汁，再輕輕將蘭姆酒漂浮在表面。",
+    garnish: "萊姆角",
+    moods: ["drunk", "happy"],
+  },
+  {
+    id: 37, name: "Whiskey Smash", spirit: "whiskey",
+    badges: ["波本威士忌", "搗壓"],
+    preview: "清新薄荷加上波本的夏日之選",
+    ingredients: [
+      { name: "波本威士忌", amount: "2 oz" },
+      { name: "檸檬角", amount: "3 塊" },
+      { name: "Simple Syrup", amount: "3/4 oz" },
+      { name: "新鮮薄荷葉", amount: "6-8 片" },
+    ],
+    method: "薄荷與糖漿搗壓，加入檸檬角再搗出汁。加入威士忌，加冰大力搖盪。雙重濾網濾入裝冰的岩石杯。",
+    garnish: "薄荷枝 + 檸檬角",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 38, name: "Gin Fix", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "鳳梨汁提升的清爽柑橘",
+    ingredients: [
+      { name: "琴酒", amount: "2 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+      { name: "鳳梨糖漿", amount: "1/2 oz" },
+      { name: "Simple Syrup", amount: "1/4 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入裝碎冰的岩石杯。",
+    garnish: "檸檬片",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 39, name: "Vesper", spirit: "gin",
+    badges: ["琴酒", "伏特加", "攪拌", "007"],
+    preview: "James Bond 的原創配方——「搖盪，不攪拌」",
+    ingredients: [
+      { name: "琴酒", amount: "3 oz" },
+      { name: "伏特加", amount: "1 oz" },
+      { name: "Lillet Blanc（或 Cocchi Americano）", amount: "1/2 oz" },
+    ],
+    method: "「搖盪，不攪拌」——所有材料加冰大力搖盪。雙重濾網濾入大型 coupe 杯。",
+    garnish: "大片檸檬皮捲",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 40, name: "20th Century", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "巧克力與柑橘的奇妙相遇",
+    ingredients: [
+      { name: "琴酒", amount: "1.5 oz" },
+      { name: "白色可可甜酒", amount: "3/4 oz" },
+      { name: "Lillet Blanc", amount: "3/4 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 41, name: "French 75", spirit: "gin",
+    badges: ["琴酒", "搖盪", "香檳"],
+    preview: "一戰時誕生，至今依然優雅",
+    ingredients: [
+      { name: "琴酒", amount: "1.5 oz" },
+      { name: "檸檬汁（新鮮）", amount: "1/2 oz" },
+      { name: "Simple Syrup", amount: "1/2 oz" },
+      { name: "香檳或 Prosecco", amount: "補滿" },
+    ],
+    method: "琴酒、檸檬汁、糖漿加冰搖盪，濾入香檳杯，補香檳至八分。",
+    garnish: "檸檬皮捲",
+    moods: ["romantic", "happy"],
+  },
+  {
+    id: 42, name: "Aviation", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "Maraschino 與 Crème de Violette 帶來的紫藍天空色",
+    ingredients: [
+      { name: "琴酒", amount: "2 oz" },
+      { name: "Maraschino 酒", amount: "1/2 oz" },
+      { name: "Crème de Violette", amount: "1/4 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "酒漬櫻桃",
+    moods: ["romantic", "miss"],
+  },
+  {
+    id: 43, name: "Rye Buck", spirit: "whiskey",
+    badges: ["裸麥威士忌", "長飲"],
+    preview: "薑汁啤酒賦予裸麥辛香的長飲風情",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "1/2 oz" },
+      { name: "Ginger Beer", amount: "4 oz" },
+    ],
+    method: "Highball 杯加冰，倒入威士忌和萊姆汁，補薑汁啤酒輕攪。",
+    garnish: "萊姆角",
+    moods: ["drunk", "relax"],
+  },
+  {
+    id: 44, name: "Moscow Mule", spirit: "vodka",
+    badges: ["伏特加", "長飲"],
+    preview: "銅杯裡的清爽薑味長飲",
+    ingredients: [
+      { name: "伏特加", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "1/2 oz" },
+      { name: "Ginger Beer", amount: "4-5 oz" },
+    ],
+    method: "銅杯（或 highball 杯）加碎冰，倒入伏特加和萊姆汁，補薑汁啤酒輕攪。",
+    garnish: "萊姆角 + 薄荷枝",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 45, name: "Kangaroo", spirit: "vodka",
+    badges: ["伏特加", "攪拌", "Vodka Martini"],
+    preview: "伏特加馬丁尼的正式名稱",
+    ingredients: [
+      { name: "伏特加", amount: "2.5 oz" },
+      { name: "Dry 苦艾酒", amount: "1/2 oz" },
+    ],
+    method: "所有材料加冰攪拌（不搖盪）。濾入冷藏的馬丁尼杯。",
+    garnish: "檸檬皮捲 或 橄欖",
+    moods: ["sexy", "relax"],
+  },
+  {
+    id: 46, name: "Hemingway Daiquiri", spirit: "rum",
+    badges: ["白蘭姆酒", "搖盪"],
+    preview: "海明威的低糖高酒版 Daiquiri",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "2 oz" },
+      { name: "萊姆汁（新鮮）", amount: "3/4 oz" },
+      { name: "葡萄柚汁（新鮮）", amount: "1/2 oz" },
+      { name: "Maraschino 酒", amount: "1/4 oz" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入冷藏的 coupe 杯。",
+    garnish: "萊姆皮捲",
+    moods: ["relax", "miss"],
+  },
+  {
+    id: 47, name: "Vieux Carré", spirit: "whiskey",
+    badges: ["裸麥威士忌 + 白蘭地", "攪拌", "紐奧良"],
+    preview: "新奧良法式區誕生的複雜五材料調酒",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "3/4 oz" },
+      { name: "干邑白蘭地", amount: "3/4 oz" },
+      { name: "甜型苦艾酒", amount: "3/4 oz" },
+      { name: "Bénédictine", amount: "1 tsp" },
+      { name: "Peychaud's + Angostura 苦精", amount: "各1 dash" },
+    ],
+    method: "所有材料加冰充分攪拌。濾入裝有大冰塊的老式杯。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 48, name: "Presbyterian", spirit: "whiskey",
+    badges: ["威士忌", "長飲"],
+    preview: "薑汁啤酒與蘇打水的二重奏",
+    ingredients: [
+      { name: "波本或裸麥威士忌", amount: "2 oz" },
+      { name: "Ginger Beer", amount: "2 oz" },
+      { name: "蘇打水", amount: "2 oz" },
+    ],
+    method: "Highball 杯加冰，倒入威士忌，補 Ginger Beer 和蘇打水，輕攪。",
+    garnish: "萊姆角",
+    moods: ["drunk", "relax"],
+  },
+  {
+    id: 49, name: "Pisco Sour", spirit: "other",
+    badges: ["皮斯科", "搖盪", "秘魯/智利"],
+    preview: "安地斯山脈的驕傲，帶苦精圖案的蛋白沙棱",
+    ingredients: [
+      { name: "Pisco（皮斯科白蘭地）", amount: "2 oz" },
+      { name: "萊姆汁或檸檬汁", amount: "1 oz" },
+      { name: "Simple Syrup", amount: "3/4 oz" },
+      { name: "蛋白", amount: "1 個" },
+      { name: "Angostura 苦精", amount: "裝飾用" },
+    ],
+    method: "先乾搖 30 秒使蛋白起泡。加冰再搖 15 秒。雙重濾網濾入 coupe 或岩石杯。在蛋白泡沫上點幾滴苦精再以牙籤劃出圖案。",
+    garnish: "Angostura 苦精點圖案",
+    moods: ["romantic", "miss"],
+  },
+  {
+    id: 50, name: "Whiskey Sour", spirit: "whiskey",
+    badges: ["波本威士忌", "搖盪"],
+    preview: "最親民的威士忌酸味調酒",
+    ingredients: [
+      { name: "波本威士忌", amount: "2 oz" },
+      { name: "檸檬汁（新鮮）", amount: "3/4 oz" },
+      { name: "Simple Syrup", amount: "3/4 oz" },
+      { name: "蛋白（可選）", amount: "1 個" },
+    ],
+    method: "若加蛋白，先乾搖 30 秒。加冰再搖盪。雙重濾網濾入裝冰的岩石杯或 coupe。",
+    garnish: "橙片 + 酒漬櫻桃",
+    moods: ["drunk", "relax"],
+  }
+];
+
+// Image cache keyed by cocktail id
+const imageCache = {};
+
+// Map cocktail names to curated Unsplash search keywords
+const cocktailKeywords = {
+  "Old Fashioned": "old+fashioned+whiskey+cocktail",
+  "Manhattan": "manhattan+cocktail+glass",
+  "Sazerac": "sazerac+cocktail+whiskey",
+  "Negroni": "negroni+cocktail+campari",
+  "Mint Julep": "mint+julep+cocktail+mint",
+  "Tom Collins": "tom+collins+gin+cocktail",
+  "Margarita": "margarita+cocktail+lime+salt",
+  "Daiquiri": "daiquiri+rum+cocktail",
+  "Martini": "martini+cocktail+olive+glass",
+  "Brandy Alexander": "brandy+alexander+cream+cocktail",
+  "Improved Whiskey Cocktail": "whiskey+cocktail+rocks+glass",
+  "Gin Rickey": "gin+rickey+cocktail+lime",
+  "Paloma": "paloma+tequila+grapefruit+cocktail",
+  "Bee's Knees": "bees+knees+gin+honey+cocktail",
+  "Monte Carlo": "whiskey+benedictine+cocktail",
+  "Boulevardier": "boulevardier+bourbon+campari+cocktail",
+  "Mai Tai": "mai+tai+rum+tiki+cocktail",
+  "Aperol Spritz": "aperol+spritz+orange+prosecco",
+  "Champagne Cocktail": "champagne+cocktail+bubbles+glass",
+  "Pink Lady": "pink+lady+cocktail+pink+drink",
+  "Jack Rose": "jack+rose+cocktail+grenadine",
+  "Caipirinha": "caipirinha+cachaca+lime+brazil",
+  "Mexican Firing Squad": "tequila+grenadine+cocktail+red",
+  "Last Word": "last+word+gin+green+cocktail",
+  "Sidecar": "sidecar+cognac+cocktail+sugar+rim",
+  "Mojito": "mojito+rum+mint+lime+cocktail",
+  "Corpse Reviver No. 2": "corpse+reviver+gin+absinthe+cocktail",
+  "Gimlet": "gimlet+gin+lime+cocktail",
+  "Martinez": "martinez+gin+vermouth+cocktail",
+  "Singapore Sling": "singapore+sling+gin+tropical+cocktail",
+  "Silver Fizz": "gin+fizz+egg+white+foam+cocktail",
+  "Daisy": "tequila+daisy+cocktail+fizz",
+  "Jungle Bird": "jungle+bird+rum+pineapple+campari",
+  "Americano": "americano+campari+soda+cocktail",
+  "Bamboo": "bamboo+sherry+vermouth+cocktail",
+  "Dark 'n Stormy": "dark+stormy+rum+ginger+beer",
+  "Whiskey Smash": "whiskey+smash+bourbon+lemon+mint",
+  "Gin Fix": "gin+fix+pineapple+cocktail+lemon",
+  "Vesper": "vesper+martini+james+bond+cocktail",
+  "20th Century": "twentieth+century+gin+creme+de+cacao+cocktail",
+  "French 75": "french+75+champagne+gin+cocktail",
+  "Aviation": "aviation+gin+violet+purple+cocktail",
+  "Rye Buck": "rye+buck+whiskey+ginger+beer",
+  "Moscow Mule": "moscow+mule+copper+mug+ginger+beer",
+  "Kangaroo": "vodka+martini+cocktail+glass",
+  "Hemingway Daiquiri": "hemingway+daiquiri+rum+grapefruit",
+  "Vieux Carré": "vieux+carre+new+orleans+cocktail",
+  "Presbyterian": "highball+whiskey+ginger+cocktail",
+  "Pisco Sour": "pisco+sour+egg+white+cocktail+peru",
+  "Whiskey Sour": "whiskey+sour+bourbon+lemon+cocktail"
+};
+
+function getImageUrl(cocktail) {
+  const keywords = cocktailKeywords[cocktail.name] || 
+    encodeURIComponent(cocktail.name.toLowerCase()) + '+cocktail+drink';
+  // Use sig parameter to get consistent image for each cocktail
+  return `https://source.unsplash.com/featured/600x400/?${keywords}&sig=${cocktail.id * 7919}`;
+}
+
+function loadPhotoForCard(el, cocktail) {
+  const wrap = el.querySelector('.card-photo-wrap');
+  const skeleton = el.querySelector('.photo-skeleton');
+  const img = el.querySelector('.card-photo-img');
+  if (!wrap || img.dataset.loaded === 'true') return;
+
+  const url = getImageUrl(cocktail);
+  img.src = url;
+  img.onload = () => {
+    img.classList.add('loaded');
+    img.dataset.loaded = 'true';
+    if (skeleton) skeleton.classList.add('hidden');
+  };
+  img.onerror = () => {
+    // fallback to generic cocktail image
+    img.src = `https://source.unsplash.com/featured/600x400/?cocktail,drink,bar&sig=${cocktail.id * 1337}`;
+    img.onload = () => {
+      img.classList.add('loaded');
+      img.dataset.loaded = 'true';
+      if (skeleton) skeleton.classList.add('hidden');
+    };
+  };
+}
+
+function renderCards(list) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  document.getElementById('count').textContent = list.length;
+  list.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.style.animationDelay = (i * 0.04) + 's';
+    el.dataset.id = c.id;
+    el.innerHTML = `
+      <div class="card-num">No. ${String(c.id).padStart(2,'0')}</div>
+      <div class="card-name">${c.name}</div>
+      <div class="card-badges">
+        ${c.badges.map((b,idx) => `<span class="badge ${idx===0?'badge-spirit':'badge-method'}">${b}</span>`).join('')}
+      </div>
+      <div class="card-preview">${c.preview}</div>
+      ${c.moods && c.moods.length ? `<div class="mood-tags">${c.moods.map(m => `<span class="mood-tag ${m}">${moodLabels[m]}</span>`).join('')}</div>` : ''}
+      <div class="card-expand">
+        <div class="section-label">成分與比例</div>
+        <ul class="ingredients-list">
+          ${c.ingredients.map(ing => `<li><span class="ing-name">${ing.name}</span><span class="ing-amount">${ing.amount}</span></li>`).join('')}
+        </ul>
+        <div class="section-label">製作方式</div>
+        <p class="method-text">${c.method}</p>
+        <div class="garnish-row"><span>裝飾</span>${c.garnish}</div>
+        <div class="section-label" style="margin-top:1.25rem">成品圖</div>
+        <div class="card-photo-wrap">
+          <div class="photo-skeleton">載入圖片中…</div>
+          <img class="card-photo-img" alt="${c.name} cocktail" src="" />
+          <div class="photo-credit">Photo via <a href="https://unsplash.com?utm_source=cocktail_guide&utm_medium=referral" target="_blank">Unsplash</a></div>
+        </div>
+      </div>
+      <div class="toggle-icon">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+          <rect x="4" y="0" width="2" height="10"/>
+          <rect x="0" y="4" width="10" height="2" class="h-bar"/>
+        </svg>
+      </div>
+    `;
+    el.addEventListener('click', () => {
+      const wasExpanded = el.classList.contains('expanded');
+      el.classList.toggle('expanded');
+      const hBar = el.querySelector('.h-bar');
+      if (el.classList.contains('expanded')) {
+        hBar.style.display = 'none';
+        if (!wasExpanded) loadPhotoForCard(el, c);
+      } else {
+        hBar.style.display = '';
+      }
+    });
+    grid.appendChild(el);
+  });
+}
+
+let currentFilter = 'all';
+let currentSearch = '';
+let currentMood = null;
+
+const moodLabels = {
+  happy:    '😄 開心',
+  relax:    '🌿 放鬆',
+  miss:     '🌙 思念',
+  sexy:     '🔥 性愛',
+  romantic: '🌹 浪漫',
+  drunk:    '🥃 爛醉'
+};
+
+function applyMoodClasses() {
+  document.querySelectorAll('.card').forEach(card => {
+    card.classList.remove('mood-highlight', 'mood-dim');
+    if (!currentMood) return;
+    const id = parseInt(card.dataset.id);
+    const cocktail = cocktails.find(c => c.id === id);
+    if (cocktail && cocktail.moods && cocktail.moods.includes(currentMood)) {
+      card.classList.add('mood-highlight');
+    } else {
+      card.classList.add('mood-dim');
+    }
+  });
+}
+
+function applyFilters() {
+  let list = cocktails;
+  if (currentFilter !== 'all') list = list.filter(c => c.spirit === currentFilter);
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    list = list.filter(c => c.name.toLowerCase().includes(q) || c.badges.some(b => b.toLowerCase().includes(q)) || c.preview.toLowerCase().includes(q));
+  }
+  renderCards(list);
+  applyMoodClasses();
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+document.querySelectorAll('.mood-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mood = btn.dataset.mood;
+    if (currentMood === mood) {
+      currentMood = null;
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    } else {
+      currentMood = mood;
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    applyMoodClasses();
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  currentSearch = e.target.value;
+  applyFilters();
+});
+
+renderCards(cocktails);
+</script>
+</body>
+</html>

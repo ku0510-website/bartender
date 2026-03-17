@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bartender</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --cream: #f5efe3;
+    --amber: #c8882a;
+    --amber-light: #e8b24a;
+    --amber-dark: #8a5a10;
+    --copper: #b5622a;
+    --smoke: #6b5f4e;
+    --paper: #ede5d2;
+    --gold: #d4a853;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--ink);
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(200,136,42,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(181,98,42,0.06) 0%, transparent 60%);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    position: relative;
+  }
+
+  header::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: var(--amber);
+    margin: 0 auto 1.5rem;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--amber-light);
+  }
+
+  .header-sub {
+    font-size: 0.98rem;
+    color: var(--smoke);
+    letter-spacing: 0.05em;
+    margin-top: 1rem;
+  }
+
+  .controls {
+    max-width: 900px;
+    margin: 2.5rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--smoke);
+    width: 16px;
+    height: 16px;
+  }
+
+  #search {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,136,42,0.2);
+    border-radius: 4px;
+    padding: 0.65rem 1rem 0.65rem 2.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.98rem;
+    color: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #search::placeholder { color: var(--smoke); }
+  #search:focus { border-color: var(--amber); }
+
+  .filter-btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid rgba(200,136,42,0.25);
+    border-radius: 3px;
+    padding: 0.5rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.83rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--smoke);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ink);
+  }
+
+  .count-bar {
+    text-align: center;
+    font-size: 0.86rem;
+    color: var(--smoke);
+    margin: 1.5rem auto 0;
+    letter-spacing: 0.05em;
+  }
+
+  .count-bar span { color: var(--amber); }
+
+  .grid {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #221a0e, #1a1208);
+    border: 1px solid rgba(200,136,42,0.15);
+    border-radius: 6px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .card:hover {
+    border-color: rgba(200,136,42,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card.expanded {
+    border-color: var(--amber);
+  }
+
+  .card-num {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: var(--amber-dark);
+    margin-bottom: 0.5rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .badge {
+    font-size: 0.71rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .badge-spirit {
+    color: var(--amber-light);
+    border-color: rgba(200,136,42,0.3);
+    background: rgba(200,136,42,0.08);
+  }
+
+  .badge-method {
+    color: var(--copper);
+    border-color: rgba(181,98,42,0.3);
+    background: rgba(181,98,42,0.08);
+  }
+
+  .card-preview {
+    font-size: 0.92rem;
+    color: var(--smoke);
+    line-height: 1.5;
+  }
+
+  .card-expand {
+    display: none;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(200,136,42,0.12);
+    animation: slideDown 0.25s ease;
+  }
+
+  .card.expanded .card-expand { display: block; }
+
+  .section-label {
+    font-size: 0.71rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,136,42,0.15);
+  }
+
+  .ingredients-list {
+    list-style: none;
+    margin-bottom: 1.25rem;
+  }
+
+  .ingredients-list li {
+    font-size: 0.94rem;
+    color: #c8b99a;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .ingredients-list li:last-child { border-bottom: none; }
+
+  .ing-name { color: var(--cream); }
+  .ing-amount { 
+    color: var(--amber); 
+    font-size: 0.86rem;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .method-text {
+    font-size: 0.94rem;
+    color: #c8b99a;
+    line-height: 1.7;
+  }
+
+  .garnish-row {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--smoke);
+  }
+
+  .garnish-row span:first-child {
+    font-size: 0.69rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber-dark);
+    white-space: nowrap;
+  }
+
+  /* ── 成品圖片 ── */
+  .card-photo-wrap {
+    margin-top: 1.25rem;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+  }
+
+  .card-photo-wrap img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .card-photo-wrap img.loaded {
+    opacity: 1;
+  }
+
+  .card-photo-wrap:hover img {
+    transform: scale(1.04);
+  }
+
+  .photo-skeleton {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(90deg, #1e1508 25%, #2a1e0a 50%, #1e1508 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    position: absolute;
+    top: 0; left: 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber-dark);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+
+  .photo-skeleton.hidden { display: none; }
+
+  .photo-credit {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 0.4rem 0.6rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    font-size: 0.69rem;
+    color: rgba(255,255,255,0.5);
+    text-align: right;
+  }
+
+  .photo-credit a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .toggle-icon {
+    position: absolute;
+    bottom: 1.25rem;
+    right: 1.5rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,136,42,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--amber-dark);
+  }
+
+  .card:hover .toggle-icon { border-color: var(--amber); color: var(--amber); }
+  .card.expanded .toggle-icon { background: var(--amber); color: var(--ink); border-color: var(--amber); transform: rotate(45deg); }
+
+  .hidden { display: none !important; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+
+  /* ── 心情篩選 ── */
+  .mood-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .mood-label {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--smoke);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mood-label::before,
+  .mood-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,136,42,0.12);
+  }
+
+  .mood-btns {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mood-btn {
+    background: transparent;
+    border: 1px solid rgba(200,136,42,0.18);
+    border-radius: 100px;
+    padding: 0.55rem 1.2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.94rem;
+    font-weight: 400;
+    color: var(--smoke);
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mood-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.22s;
+    border-radius: 100px;
+  }
+
+  .mood-btn:hover {
+    color: var(--cream);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  .mood-btn.active {
+    color: var(--ink);
+    font-weight: 500;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  .mood-btn .mood-emoji { font-size: 1.15rem; line-height: 1; }
+
+  /* Individual mood colours */
+  .mood-happy  { --mc: #f5c842; }
+  .mood-relax  { --mc: #6bcfb5; }
+  .mood-miss   { --mc: #a78bfa; }
+  .mood-sexy   { --mc: #f472b6; }
+  .mood-romantic { --mc: #fb7185; }
+  .mood-drunk  { --mc: #f97316; }
+
+  .mood-btn:hover  { border-color: var(--mc); color: var(--mc); }
+  .mood-btn.active { background: var(--mc); border-color: var(--mc); }
+  .mood-btn.active::before { opacity: 0; }
+
+  /* mood tag on card */
+  .mood-tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+  }
+
+  .mood-tag {
+    font-size: 0.69rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 100px;
+    opacity: 0.7;
+  }
+
+  .mood-tag.happy    { background: rgba(245,200,66,0.15);  color: #f5c842; border: 1px solid rgba(245,200,66,0.25); }
+  .mood-tag.relax    { background: rgba(107,207,181,0.15); color: #6bcfb5; border: 1px solid rgba(107,207,181,0.25); }
+  .mood-tag.miss     { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+  .mood-tag.sexy     { background: rgba(244,114,182,0.15); color: #f472b6; border: 1px solid rgba(244,114,182,0.25); }
+  .mood-tag.romantic { background: rgba(251,113,133,0.15); color: #fb7185; border: 1px solid rgba(251,113,133,0.25); }
+  .mood-tag.drunk    { background: rgba(249,115,22,0.15);  color: #f97316; border: 1px solid rgba(249,115,22,0.25); }
+
+
+
+  /* ── 空狀態 ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 6rem 2rem;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    display: block;
+    filter: drop-shadow(0 0 30px rgba(200,136,42,0.3));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .empty-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--cream);
+    margin-bottom: 0.75rem;
+  }
+
+  .empty-hint {
+    font-size: 0.98rem;
+    color: var(--smoke);
+    letter-spacing: 0.03em;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+
+  /* ── 頂部動作列 ── */
+  .action-bar {
+    max-width: 900px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: 1px solid rgba(200,136,42,0.25);
+    border-radius: 5px;
+    padding: 0.6rem 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--smoke);
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .action-btn:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+
+  .action-btn.active-view {
+    background: rgba(200,136,42,0.12);
+    border-color: var(--amber);
+    color: var(--amber-light);
+  }
+
+  .action-btn .btn-count {
+    background: var(--amber);
+    color: var(--ink);
+    font-size: 0.71rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: 100px;
+    min-width: 1.4rem;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .action-btn .btn-count.zero { opacity: 0.4; }
+
+  /* ── 收藏按鈕（卡片內） ── */
+  .fav-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.26rem;
+    line-height: 1;
+    opacity: 0.3;
+    transition: all 0.2s ease;
+    z-index: 2;
+    padding: 0.2rem;
+  }
+
+  .fav-btn:hover { opacity: 0.8; transform: scale(1.2); }
+  .fav-btn.saved { opacity: 1; filter: drop-shadow(0 0 6px rgba(251,113,133,0.6)); }
+
+  /* ── 隨機推薦 modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: linear-gradient(145deg, #2a1e0e, #1a1208);
+    border: 1px solid rgba(200,136,42,0.35);
+    border-radius: 10px;
+    padding: 2.5rem 2rem 2rem;
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.show .modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: none;
+    border: none;
+    color: var(--smoke);
+    font-size: 1.3rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--cream); }
+
+  .modal-eyebrow {
+    font-size: 0.71rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-cocktail-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+  }
+
+  .modal-preview {
+    font-size: 0.95rem;
+    color: var(--smoke);
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .modal-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+  }
+
+  .modal .section-label { margin-top: 0; }
+
+  .modal-ingredients {
+    list-style: none;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-ingredients li {
+    font-size: 0.95rem;
+    color: #c8b99a;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .modal-ingredients li:last-child { border-bottom: none; }
+
+  .modal-method {
+    font-size: 0.95rem;
+    color: #c8b99a;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  .modal-garnish {
+    font-size: 0.9rem;
+    color: var(--smoke);
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .modal-garnish span:first-child {
+    font-size: 0.69rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber-dark);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 0.7rem;
+    border-radius: 5px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid;
+  }
+
+  .modal-btn-primary {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ink);
+  }
+  .modal-btn-primary:hover { background: var(--amber-light); }
+
+  .modal-btn-secondary {
+    background: transparent;
+    border-color: rgba(200,136,42,0.3);
+    color: var(--smoke);
+  }
+  .modal-btn-secondary:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ── 收藏空狀態 ── */
+  .fav-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 2rem;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .fav-empty .empty-icon { font-size: 3rem; margin-bottom: 1.2rem; display: block; }
+  .fav-empty .empty-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--cream); margin-bottom: 0.5rem; }
+  .fav-empty .empty-hint { font-size: 0.94rem; color: var(--smoke); }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: rgba(107,95,78,0.5);
+    border-top: 1px solid rgba(200,136,42,0.08);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">Just for you</p>
+  <h1><em>Bartender</em></h1>
+  <p class="header-sub">成分 · 比例 · 製作方式 — 點擊卡片展開詳細配方</p>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="搜尋調酒名稱或基酒…">
+  </div>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all">全部</button>
+    <button class="filter-btn" data-filter="whiskey">威士忌</button>
+    <button class="filter-btn" data-filter="gin">琴酒</button>
+    <button class="filter-btn" data-filter="rum">蘭姆酒</button>
+    <button class="filter-btn" data-filter="tequila">龍舌蘭</button>
+    <button class="filter-btn" data-filter="brandy">白蘭地</button>
+    <button class="filter-btn" data-filter="vodka">伏特加</button>
+    <button class="filter-btn" data-filter="other">其他</button>
+  </div>
+</div>
+<div class="action-bar">
+  <button class="action-btn" id="btn-random">
+    <span>🎲</span> 隨機推薦一杯
+  </button>
+  <button class="action-btn" id="btn-favs">
+    <span>🤍</span> 我的收藏
+    <span class="btn-count zero" id="fav-count">0</span>
+  </button>
+</div>
+<div class="mood-section">
+  <p class="mood-label">今晚的心情是？</p>
+  <div class="mood-btns">
+    <button class="mood-btn mood-happy"    data-mood="happy">   <span class="mood-emoji">😄</span> 開心 </button>
+    <button class="mood-btn mood-relax"    data-mood="relax">   <span class="mood-emoji">🌿</span> 放鬆 </button>
+    <button class="mood-btn mood-miss"     data-mood="miss">    <span class="mood-emoji">🌙</span> 思念 </button>
+    <button class="mood-btn mood-sexy"     data-mood="sexy">    <span class="mood-emoji">🔥</span> 性愛 </button>
+    <button class="mood-btn mood-romantic" data-mood="romantic"><span class="mood-emoji">🌹</span> 浪漫 </button>
+    <button class="mood-btn mood-drunk"    data-mood="drunk">   <span class="mood-emoji">🥃</span> 就是要爛醉 </button>
+  </div>
+</div>
+<p class="count-bar">顯示 <span id="count">50</span> / 50 款調酒</p>
+
+<div class="grid" id="grid"></div>
+
+<!-- Random / Fav Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <p class="modal-eyebrow" id="modal-eyebrow">今晚推薦</p>
+    <h2 class="modal-cocktail-name" id="modal-name"></h2>
+    <p class="modal-preview" id="modal-preview"></p>
+    <div class="modal-badges" id="modal-badges"></div>
+    <div class="section-label">成分與比例</div>
+    <ul class="modal-ingredients" id="modal-ingredients"></ul>
+    <div class="section-label">製作方式</div>
+    <p class="modal-method" id="modal-method"></p>
+    <div class="modal-garnish"><span>裝飾</span><span id="modal-garnish"></span></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-primary" id="modal-shuffle">🎲 再來一杯</button>
+      <button class="modal-btn modal-btn-secondary" id="modal-fav-btn">🤍 加入收藏</button>
+    </div>
+  </div>
+</div>
+
+<footer>配方參考自 The Educated Barfly YouTube 頻道 · 僅供學習參考</footer>
+
+<script>
+// ── 全域狀態變數（統一宣告）──────────────────────────────
+let currentFilter = 'all';
+let currentSearch = '';
+let currentMood = null;
+let favourites = new Set();
+let viewingFavs = false;
+let currentModalCocktail = null;
+
+const cocktails = [
+  {
+    id: 1, name: "Old Fashioned", spirit: "whiskey",
+    badges: ["波本/裸麥威士忌", "攪拌"],
+    preview: "調酒界的定義之作，簡單而深刻",
+    ingredients: [
+      { name: "波本或裸麥威士忌", amount: "60 ml" },
+      { name: "Demerara 糖漿 (2:1)", amount: "7 ml" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+    ],
+    method: "將所有材料放入攪拌杯，加冰攪拌至充分冷卻（約 20-30 秒）。濾入裝有大冰塊的老式杯中。以橙皮捲在杯口輕刮後放入裝飾。",
+    garnish: "橙皮捲 + Luxardo 酒漬櫻桃",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 2, name: "Manhattan", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌"],
+    preview: "紐約都會風情，優雅而有深度",
+    ingredients: [
+      { name: "裸麥或波本威士忌", amount: "60 ml" },
+      { name: "甜型苦艾酒", amount: "30 ml" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+    ],
+    method: "所有材料加冰攪拌至冷卻。濾入冷藏過的雞尾酒杯（coupe 或 Nick & Nora）。",
+    garnish: "Luxardo 酒漬櫻桃",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 3, name: "Sazerac", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌", "經典紐奧良"],
+    preview: "新奧良最古老的調酒之一",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "60 ml" },
+      { name: "Demerara 糖漿", amount: "7 ml" },
+      { name: "Peychaud's 苦精", amount: "3 dashes" },
+      { name: "Angostura 苦精", amount: "1 dash" },
+      { name: "苦艾酒（潤杯用）", amount: "適量" },
+    ],
+    method: "先以苦艾酒潤一個老式杯，倒掉多餘。其他材料加冰攪拌後濾入杯中（不加冰）。以檸檬皮捲在杯口輕刮後捨棄（不放入杯中）。",
+    garnish: "檸檬皮捲（不入杯）",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 4, name: "Negroni", spirit: "gin",
+    badges: ["琴酒", "攪拌", "義式"],
+    preview: "苦甜平衡的完美三等分",
+    ingredients: [
+      { name: "琴酒", amount: "30 ml" },
+      { name: "甜型苦艾酒", amount: "30 ml" },
+      { name: "Campari", amount: "30 ml" },
+    ],
+    method: "所有材料加冰攪拌至冷卻。濾入裝有大冰塊的老式杯中。",
+    garnish: "橙皮捲",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 5, name: "Mint Julep", spirit: "whiskey",
+    badges: ["波本威士忌", "搗壓"],
+    preview: "肯塔基德比的官方飲料",
+    ingredients: [
+      { name: "波本威士忌", amount: "75 ml" },
+      { name: "Simple Syrup (1:1)", amount: "15 ml" },
+      { name: "新鮮薄荷葉", amount: "8-10 片" },
+    ],
+    method: "薄荷葉與糖漿放入銀杯（julep cup）中輕輕搗壓（釋放香氣而非破壞葉片）。加入波本威士忌，填滿碎冰並攪拌至杯外結霜。插入薄荷枝讓香氣四溢。",
+    garnish: "大束新鮮薄荷枝",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 6, name: "Tom Collins", spirit: "gin",
+    badges: ["琴酒", "搖盪", "長飲"],
+    preview: "清爽的柑橘氣泡長飲",
+    ingredients: [
+      { name: "琴酒", amount: "45 ml" },
+      { name: "檸檬汁（新鮮）", amount: "30 ml" },
+      { name: "Simple Syrup", amount: "20 ml" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "將琴酒、檸檬汁、糖漿加冰搖盪。濾入裝滿冰塊的 Collins 杯，補上蘇打水輕攪。",
+    garnish: "檸檬片 + 酒漬櫻桃",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 7, name: "Margarita", spirit: "tequila",
+    badges: ["龍舌蘭", "搖盪"],
+    preview: "最受歡迎的龍舌蘭調酒",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "30 ml" },
+      { name: "君度橙酒", amount: "15 ml" },
+      { name: "Agave 糖漿", amount: "7 ml" },
+    ],
+    method: "杯口用萊姆汁潤濕後沾鹽（半圈）。所有材料加冰大力搖盪。濾入岩石杯，可加冰塊或不加。",
+    garnish: "鹽口 + 萊姆角",
+    moods: ["happy", "sexy"],
+  },
+  {
+    id: 8, name: "Daiquiri", spirit: "rum",
+    badges: ["白蘭姆酒", "搖盪", "古巴"],
+    preview: "三種材料的平衡藝術",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "20 ml" },
+      { name: "Simple Syrup (2:1)", amount: "20 ml" },
+    ],
+    method: "所有材料加冰用力搖盪至充分冷卻。雙重濾網（double strain）濾入冷藏的 coupe 杯中。",
+    garnish: "萊姆皮捲（可省略）",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 9, name: "Martini", spirit: "gin",
+    badges: ["琴酒", "攪拌"],
+    preview: "調酒之王，在苦艾酒比例中取得平衡",
+    ingredients: [
+      { name: "琴酒", amount: "75 ml" },
+      { name: "Dry 苦艾酒", amount: "15 ml" },
+      { name: "橙味苦精（可選）", amount: "1 dash" },
+    ],
+    method: "所有材料加冰充分攪拌（30-40 秒）。濾入冷藏的馬丁尼杯或 coupe。以檸檬皮捲輕刮杯口。",
+    garnish: "檸檬皮捲 或 橄欖",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 10, name: "Brandy Alexander", spirit: "brandy",
+    badges: ["白蘭地", "搖盪", "甜點風"],
+    preview: "絲滑奶香的甜點調酒",
+    ingredients: [
+      { name: "干邑白蘭地", amount: "45 ml" },
+      { name: "棕色可可甜酒", amount: "30 ml" },
+      { name: "鮮奶油", amount: "30 ml" },
+    ],
+    method: "所有材料加冰搖盪至充分冷卻（奶油充分乳化）。雙重濾網濾入 coupe 杯。表面輕磨肉荳蔻。",
+    garnish: "現磨肉荳蔻",
+    moods: ["relax", "romantic"],
+  },
+  {
+    id: 11, name: "Improved Whiskey Cocktail", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌", "19世紀"],
+    preview: "Old Fashioned 的進化版，加入苦艾酒與黃色沙特勒斯",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "60 ml" },
+      { name: "Maraschino 酒", amount: "7 ml" },
+      { name: "Absinthe（潤杯）", amount: "少許" },
+      { name: "Simple Syrup", amount: "7 ml" },
+      { name: "Peychaud's + Angostura", amount: "各1 dash" },
+    ],
+    method: "用 absinthe 潤杯（rinse）。其他材料加冰攪拌，濾入冰杯中。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 12, name: "Gin Rickey", spirit: "gin",
+    badges: ["琴酒", "長飲", "無甜"],
+    preview: "清爽無糖的氣泡萊姆長飲",
+    ingredients: [
+      { name: "琴酒", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "15 ml" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "在 highball 杯中加冰，倒入琴酒和萊姆汁，補上蘇打水輕攪。",
+    garnish: "萊姆角",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 13, name: "Paloma", spirit: "tequila",
+    badges: ["龍舌蘭", "長飲", "墨西哥"],
+    preview: "墨西哥人比 Margarita 更常喝的國民飲料",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "60 ml" },
+      { name: "葡萄柚汁（新鮮）", amount: "45 ml" },
+      { name: "萊姆汁", amount: "15 ml" },
+      { name: "Agave 糖漿", amount: "7 ml" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "杯口沾鹽（可選）。材料加冰搖盪，濾入裝冰的 highball 杯，補蘇打水。",
+    garnish: "鹽口 + 葡萄柚片",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 14, name: "Bee's Knees", spirit: "gin",
+    badges: ["琴酒", "搖盪", "禁酒時代"],
+    preview: "蜂蜜與柑橘讓琴酒更閃耀",
+    ingredients: [
+      { name: "琴酒", amount: "60 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+      { name: "蜂蜜糖漿 (2:1)", amount: "20 ml" },
+    ],
+    method: "所有材料加冰充分搖盪（蜂蜜需搖勻）。雙重濾網濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["happy", "romantic"],
+  },
+  {
+    id: 15, name: "Monte Carlo", spirit: "whiskey",
+    badges: ["裸麥威士忌", "攪拌"],
+    preview: "加入 Bénédictine 的 Manhattan 變奏",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "60 ml" },
+      { name: "Bénédictine", amount: "15 ml" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+    ],
+    method: "所有材料加冰攪拌至冷卻。濾入 coupe 或 Nick & Nora 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "romantic"],
+  },
+  {
+    id: 16, name: "Boulevardier", spirit: "whiskey",
+    badges: ["波本威士忌", "攪拌"],
+    preview: "以波本取代琴酒的 Negroni 兄弟",
+    ingredients: [
+      { name: "波本威士忌", amount: "45 ml" },
+      { name: "甜型苦艾酒", amount: "30 ml" },
+      { name: "Campari", amount: "30 ml" },
+    ],
+    method: "所有材料加冰攪拌。濾入裝有大冰塊的老式杯或 coupe 杯。",
+    garnish: "橙皮捲 或 酒漬櫻桃",
+    moods: ["relax", "sexy"],
+  },
+  {
+    id: 17, name: "Mai Tai", spirit: "rum",
+    badges: ["蘭姆酒", "搖盪", "提基"],
+    preview: "奧格尼的塔希提語：「好極了！」",
+    ingredients: [
+      { name: "陳年牙買加蘭姆酒", amount: "30 ml" },
+      { name: "陳年巴巴多斯蘭姆酒", amount: "30 ml" },
+      { name: "橙皮甜酒 (Curaçao)", amount: "15 ml" },
+      { name: "Orgeat（杏仁糖漿）", amount: "15 ml" },
+      { name: "萊姆汁（新鮮）", amount: "20 ml" },
+    ],
+    method: "所有材料加碎冰搖盪。直接倒入 tiki 杯或雙層岩石杯，補碎冰。",
+    garnish: "薄荷枝 + 萊姆角 + 鳳梨片",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 18, name: "Aperol Spritz", spirit: "other",
+    badges: ["Aperol", "氣泡", "義式"],
+    preview: "義大利夏日午後的下午茶時光",
+    ingredients: [
+      { name: "Prosecco 氣泡酒", amount: "90 ml" },
+      { name: "Aperol", amount: "60 ml" },
+      { name: "蘇打水", amount: "1 splash" },
+    ],
+    method: "大型葡萄酒杯加大冰塊，依序倒入 Prosecco、Aperol，最後加少許蘇打水輕攪。",
+    garnish: "橙片",
+    moods: ["happy", "romantic"],
+  },
+  {
+    id: 19, name: "Champagne Cocktail", spirit: "other",
+    badges: ["香檳", "氣泡", "經典"],
+    preview: "19世紀的優雅氣泡傑作",
+    ingredients: [
+      { name: "香檳或氣泡酒", amount: "適量" },
+      { name: "方糖", amount: "1 顆" },
+      { name: "Angostura 苦精", amount: "2 dashes" },
+      { name: "干邑白蘭地（可選）", amount: "7 ml" },
+    ],
+    method: "將苦精滴在方糖上放入香檳杯底部，加入干邑，緩緩倒入冰鎮香檳（不攪拌，讓糖慢慢溶化產生氣泡）。",
+    garnish: "檸檬皮捲",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 20, name: "Pink Lady", spirit: "gin",
+    badges: ["琴酒", "搖盪", "蛋白"],
+    preview: "粉嫩絲滑的禁酒時代經典",
+    ingredients: [
+      { name: "琴酒", amount: "45 ml" },
+      { name: "蘋果白蘭地", amount: "15 ml" },
+      { name: "檸檬汁", amount: "20 ml" },
+      { name: "Grenadine", amount: "15 ml" },
+      { name: "蛋白", amount: "1 個" },
+    ],
+    method: "先乾搖（不加冰）30 秒使蛋白起泡。加冰再搖 20 秒。雙重濾網濾入 coupe 杯。",
+    garnish: "冷凍覆盆莓 或 無",
+    moods: ["romantic", "sexy"],
+  },
+  {
+    id: 21, name: "Jack Rose", spirit: "brandy",
+    badges: ["蘋果白蘭地", "搖盪"],
+    preview: "紅石榴配蘋果白蘭地的美式經典",
+    ingredients: [
+      { name: "Applejack / 蘋果白蘭地", amount: "60 ml" },
+      { name: "萊姆汁或檸檬汁", amount: "20 ml" },
+      { name: "Grenadine（紅石榴糖漿）", amount: "15 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "萊姆皮捲",
+    moods: ["relax", "miss"],
+  },
+  {
+    id: 22, name: "Caipirinha", spirit: "other",
+    badges: ["卡沙夏", "搗壓", "巴西"],
+    preview: "巴西國酒，簡單直接的熱帶風情",
+    ingredients: [
+      { name: "Cachaça（卡沙夏）", amount: "60 ml" },
+      { name: "新鮮萊姆", amount: "半顆切塊" },
+      { name: "細砂糖", amount: "2 tsp" },
+    ],
+    method: "萊姆塊與糖放入岩石杯搗壓，擠出汁液並釋放精油。加碎冰，倒入卡沙夏，攪拌均勻。",
+    garnish: "萊姆角",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 23, name: "Mexican Firing Squad", spirit: "tequila",
+    badges: ["龍舌蘭", "搖盪"],
+    preview: "Charles Baker 1946 年配方，鮮豔而複雜",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "20 ml" },
+      { name: "Grenadine", amount: "15 ml" },
+      { name: "Angostura 苦精", amount: "4 dashes" },
+      { name: "蘇打水", amount: "1 splash" },
+    ],
+    method: "除蘇打水外加冰搖盪。濾入裝冰的 highball 杯，補少許蘇打水。",
+    garnish: "萊姆角",
+    moods: ["drunk", "happy"],
+  },
+  {
+    id: 24, name: "Last Word", spirit: "gin",
+    badges: ["琴酒", "搖盪", "禁酒時代"],
+    preview: "四種材料各佔四分之一的完美平衡",
+    ingredients: [
+      { name: "琴酒", amount: "20 ml" },
+      { name: "青色沙特勒斯（Chartreuse Verte）", amount: "20 ml" },
+      { name: "Maraschino 酒", amount: "20 ml" },
+      { name: "萊姆汁（新鮮）", amount: "20 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "萊姆皮捲（可省略）",
+    moods: ["sexy", "relax"],
+  },
+  {
+    id: 25, name: "Sidecar", spirit: "brandy",
+    badges: ["干邑白蘭地", "搖盪"],
+    preview: "1920年代巴黎的精緻奶油甜酒",
+    ingredients: [
+      { name: "干邑白蘭地（VS 或以上）", amount: "60 ml" },
+      { name: "君度橙酒", amount: "20 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+    ],
+    method: "杯口可選擇沾糖邊。所有材料加冰搖盪，雙重濾網濾入 coupe 杯。",
+    garnish: "糖口（可選）+ 橙皮捲",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 26, name: "Mojito", spirit: "rum",
+    badges: ["白蘭姆酒", "搗壓", "古巴"],
+    preview: "哈瓦那最受歡迎的清涼特調",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "30 ml" },
+      { name: "Simple Syrup", amount: "20 ml" },
+      { name: "新鮮薄荷葉", amount: "8-10 片" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "薄荷葉與糖漿放入杯中輕搗（不要過度搗碎）。加入蘭姆酒與萊姆汁，加碎冰，補蘇打水，輕攪。",
+    garnish: "薄荷枝 + 萊姆角",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 27, name: "Corpse Reviver No. 2", spirit: "gin",
+    badges: ["琴酒", "搖盪", "解宿醉"],
+    preview: "「三杯下肚，起死回生」",
+    ingredients: [
+      { name: "琴酒", amount: "20 ml" },
+      { name: "Cointreau 橙酒", amount: "20 ml" },
+      { name: "Lillet Blanc", amount: "20 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+      { name: "Absinthe（潤杯）", amount: "少許" },
+    ],
+    method: "用 absinthe 潤 coupe 杯。其他材料加冰搖盪，雙重濾網濾入杯中。",
+    garnish: "橙皮捲",
+    moods: ["drunk", "relax"],
+  },
+  {
+    id: 28, name: "Gimlet", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "新鮮萊姆帶出琴酒植物香氣",
+    ingredients: [
+      { name: "琴酒", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "20 ml" },
+      { name: "Simple Syrup", amount: "15 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯或加冰的岩石杯。",
+    garnish: "萊姆皮捲",
+    moods: ["relax", "happy"],
+  },
+  {
+    id: 29, name: "Martinez", spirit: "gin",
+    badges: ["老湯姆琴酒", "攪拌", "Martini 前身"],
+    preview: "馬丁尼的前身，更甜更圓潤",
+    ingredients: [
+      { name: "老湯姆琴酒（Old Tom Gin）", amount: "45 ml" },
+      { name: "甜型苦艾酒", amount: "45 ml" },
+      { name: "Maraschino 酒", amount: "7 ml" },
+      { name: "橙味苦精", amount: "2 dashes" },
+    ],
+    method: "所有材料加冰攪拌。濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["romantic", "relax"],
+  },
+  {
+    id: 30, name: "Singapore Sling", spirit: "gin",
+    badges: ["琴酒", "搖盪", "新加坡"],
+    preview: "萊佛士酒店 1915 年誕生的熱帶長飲",
+    ingredients: [
+      { name: "琴酒", amount: "45 ml" },
+      { name: "Cherry Heering", amount: "15 ml" },
+      { name: "Cointreau", amount: "7 ml" },
+      { name: "Bénédictine", amount: "7 ml" },
+      { name: "鳳梨汁", amount: "120 ml" },
+      { name: "萊姆汁", amount: "15 ml" },
+      { name: "Angostura 苦精", amount: "1 dash" },
+      { name: "Grenadine", amount: "10 ml" },
+    ],
+    method: "所有材料加冰搖盪。濾入裝冰的 highball 杯，補蘇打水（可選）。",
+    garnish: "鳳梨片 + 酒漬櫻桃",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 31, name: "Silver Fizz", spirit: "gin",
+    badges: ["琴酒", "搖盪", "蛋白"],
+    preview: "Gin Fizz 的絲滑蛋白升級版",
+    ingredients: [
+      { name: "琴酒", amount: "60 ml" },
+      { name: "檸檬汁（新鮮）", amount: "30 ml" },
+      { name: "Simple Syrup", amount: "20 ml" },
+      { name: "蛋白", amount: "1 個" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "先乾搖 30 秒。加冰再搖 15 秒。雙重濾網濾入不加冰的 Collins 杯，緩緩補蘇打水讓蛋白泡沫浮起。",
+    garnish: "無（保留泡沫美感）",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 32, name: "Daisy", spirit: "tequila",
+    badges: ["龍舌蘭", "搖盪"],
+    preview: "Margarita 的前身，以 soda 延伸",
+    ingredients: [
+      { name: "Blanco 龍舌蘭", amount: "60 ml" },
+      { name: "柳橙汁或檸檬汁", amount: "20 ml" },
+      { name: "Simple Syrup", amount: "7 ml" },
+      { name: "Grenadine", amount: "1 tsp" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "除蘇打水外加冰搖盪。濾入裝冰的 highball 杯，補蘇打水。",
+    garnish: "橙片 + 薄荷",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 33, name: "Jungle Bird", spirit: "rum",
+    badges: ["深色蘭姆酒", "搖盪", "提基"],
+    preview: "以 Campari 入提基——意外的傑作",
+    ingredients: [
+      { name: "黑蘭姆酒（Jamaican）", amount: "45 ml" },
+      { name: "Campari", amount: "20 ml" },
+      { name: "鳳梨汁", amount: "45 ml" },
+      { name: "萊姆汁（新鮮）", amount: "15 ml" },
+      { name: "Simple Syrup", amount: "15 ml" },
+    ],
+    method: "所有材料加冰搖盪。濾入裝碎冰的 tiki 杯或岩石杯。",
+    garnish: "鳳梨葉 + 萊姆角",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 34, name: "Americano", spirit: "other",
+    badges: ["Campari", "攪拌", "義式"],
+    preview: "Negroni 的無酒精前輩，James Bond 的第一杯",
+    ingredients: [
+      { name: "Campari", amount: "45 ml" },
+      { name: "甜型苦艾酒", amount: "45 ml" },
+      { name: "蘇打水", amount: "適量" },
+    ],
+    method: "在裝冰的 highball 杯中加入 Campari 和苦艾酒，補蘇打水輕攪。",
+    garnish: "橙片",
+    moods: ["relax", "romantic"],
+  },
+  {
+    id: 35, name: "Bamboo", spirit: "other",
+    badges: ["苦艾酒", "攪拌", "低酒精"],
+    preview: "日本橫濱 1895 年誕生的低酒精精品",
+    ingredients: [
+      { name: "Dry 苦艾酒（Fino Sherry）", amount: "45 ml" },
+      { name: "甜型苦艾酒", amount: "45 ml" },
+      { name: "橙味苦精", amount: "2 dashes" },
+      { name: "Angostura 苦精", amount: "1 dash" },
+    ],
+    method: "所有材料加冰充分攪拌（較長時間）。濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "miss"],
+  },
+  {
+    id: 36, name: "Dark 'n Stormy", spirit: "rum",
+    badges: ["深色蘭姆酒", "長飲", "百慕達"],
+    preview: "Gosling's 蘭姆酒的官方指定喝法",
+    ingredients: [
+      { name: "Gosling's Black Seal 蘭姆酒", amount: "60 ml" },
+      { name: "Ginger Beer", amount: "4-175 ml" },
+      { name: "萊姆汁", amount: "15 ml" },
+    ],
+    method: "Highball 杯加冰，倒入薑汁啤酒和萊姆汁，再輕輕將蘭姆酒漂浮在表面。",
+    garnish: "萊姆角",
+    moods: ["drunk", "happy"],
+  },
+  {
+    id: 37, name: "Whiskey Smash", spirit: "whiskey",
+    badges: ["波本威士忌", "搗壓"],
+    preview: "清新薄荷加上波本的夏日之選",
+    ingredients: [
+      { name: "波本威士忌", amount: "60 ml" },
+      { name: "檸檬角", amount: "3 塊" },
+      { name: "Simple Syrup", amount: "20 ml" },
+      { name: "新鮮薄荷葉", amount: "6-8 片" },
+    ],
+    method: "薄荷與糖漿搗壓，加入檸檬角再搗出汁。加入威士忌，加冰大力搖盪。雙重濾網濾入裝冰的岩石杯。",
+    garnish: "薄荷枝 + 檸檬角",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 38, name: "Gin Fix", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "鳳梨汁提升的清爽柑橘",
+    ingredients: [
+      { name: "琴酒", amount: "60 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+      { name: "鳳梨糖漿", amount: "15 ml" },
+      { name: "Simple Syrup", amount: "7 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入裝碎冰的岩石杯。",
+    garnish: "檸檬片",
+    moods: ["happy", "relax"],
+  },
+  {
+    id: 39, name: "Vesper", spirit: "gin",
+    badges: ["琴酒", "伏特加", "攪拌", "007"],
+    preview: "James Bond 的原創配方——「搖盪，不攪拌」",
+    ingredients: [
+      { name: "琴酒", amount: "90 ml" },
+      { name: "伏特加", amount: "30 ml" },
+      { name: "Lillet Blanc（或 Cocchi Americano）", amount: "15 ml" },
+    ],
+    method: "「搖盪，不攪拌」——所有材料加冰大力搖盪。雙重濾網濾入大型 coupe 杯。",
+    garnish: "大片檸檬皮捲",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 40, name: "20th Century", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "巧克力與柑橘的奇妙相遇",
+    ingredients: [
+      { name: "琴酒", amount: "45 ml" },
+      { name: "白色可可甜酒", amount: "20 ml" },
+      { name: "Lillet Blanc", amount: "20 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "檸檬皮捲",
+    moods: ["sexy", "romantic"],
+  },
+  {
+    id: 41, name: "French 75", spirit: "gin",
+    badges: ["琴酒", "搖盪", "香檳"],
+    preview: "一戰時誕生，至今依然優雅",
+    ingredients: [
+      { name: "琴酒", amount: "45 ml" },
+      { name: "檸檬汁（新鮮）", amount: "15 ml" },
+      { name: "Simple Syrup", amount: "15 ml" },
+      { name: "香檳或 Prosecco", amount: "補滿" },
+    ],
+    method: "琴酒、檸檬汁、糖漿加冰搖盪，濾入香檳杯，補香檳至八分。",
+    garnish: "檸檬皮捲",
+    moods: ["romantic", "happy"],
+  },
+  {
+    id: 42, name: "Aviation", spirit: "gin",
+    badges: ["琴酒", "搖盪"],
+    preview: "Maraschino 與 Crème de Violette 帶來的紫藍天空色",
+    ingredients: [
+      { name: "琴酒", amount: "60 ml" },
+      { name: "Maraschino 酒", amount: "15 ml" },
+      { name: "Crème de Violette", amount: "7 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入 coupe 杯。",
+    garnish: "酒漬櫻桃",
+    moods: ["romantic", "miss"],
+  },
+  {
+    id: 43, name: "Rye Buck", spirit: "whiskey",
+    badges: ["裸麥威士忌", "長飲"],
+    preview: "薑汁啤酒賦予裸麥辛香的長飲風情",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "15 ml" },
+      { name: "Ginger Beer", amount: "120 ml" },
+    ],
+    method: "Highball 杯加冰，倒入威士忌和萊姆汁，補薑汁啤酒輕攪。",
+    garnish: "萊姆角",
+    moods: ["drunk", "relax"],
+  },
+  {
+    id: 44, name: "Moscow Mule", spirit: "vodka",
+    badges: ["伏特加", "長飲"],
+    preview: "銅杯裡的清爽薑味長飲",
+    ingredients: [
+      { name: "伏特加", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "15 ml" },
+      { name: "Ginger Beer", amount: "4-150 ml" },
+    ],
+    method: "銅杯（或 highball 杯）加碎冰，倒入伏特加和萊姆汁，補薑汁啤酒輕攪。",
+    garnish: "萊姆角 + 薄荷枝",
+    moods: ["happy", "drunk"],
+  },
+  {
+    id: 45, name: "Kangaroo", spirit: "vodka",
+    badges: ["伏特加", "攪拌", "Vodka Martini"],
+    preview: "伏特加馬丁尼的正式名稱",
+    ingredients: [
+      { name: "伏特加", amount: "75 ml" },
+      { name: "Dry 苦艾酒", amount: "15 ml" },
+    ],
+    method: "所有材料加冰攪拌（不搖盪）。濾入冷藏的馬丁尼杯。",
+    garnish: "檸檬皮捲 或 橄欖",
+    moods: ["sexy", "relax"],
+  },
+  {
+    id: 46, name: "Hemingway Daiquiri", spirit: "rum",
+    badges: ["白蘭姆酒", "搖盪"],
+    preview: "海明威的低糖高酒版 Daiquiri",
+    ingredients: [
+      { name: "白蘭姆酒", amount: "60 ml" },
+      { name: "萊姆汁（新鮮）", amount: "20 ml" },
+      { name: "葡萄柚汁（新鮮）", amount: "15 ml" },
+      { name: "Maraschino 酒", amount: "7 ml" },
+    ],
+    method: "所有材料加冰搖盪。雙重濾網濾入冷藏的 coupe 杯。",
+    garnish: "萊姆皮捲",
+    moods: ["relax", "miss"],
+  },
+  {
+    id: 47, name: "Vieux Carré", spirit: "whiskey",
+    badges: ["裸麥威士忌 + 白蘭地", "攪拌", "紐奧良"],
+    preview: "新奧良法式區誕生的複雜五材料調酒",
+    ingredients: [
+      { name: "裸麥威士忌", amount: "20 ml" },
+      { name: "干邑白蘭地", amount: "20 ml" },
+      { name: "甜型苦艾酒", amount: "20 ml" },
+      { name: "Bénédictine", amount: "1 tsp" },
+      { name: "Peychaud's + Angostura 苦精", amount: "各1 dash" },
+    ],
+    method: "所有材料加冰充分攪拌。濾入裝有大冰塊的老式杯。",
+    garnish: "檸檬皮捲",
+    moods: ["relax", "drunk"],
+  },
+  {
+    id: 48, name: "Presbyterian", spirit: "whiskey",
+    badges: ["威士忌", "長飲"],
+    preview: "薑汁啤酒與蘇打水的二重奏",
+    ingredients: [
+      { name: "波本或裸麥威士忌", amount: "60 ml" },
+      { name: "Ginger Beer", amount: "60 ml" },
+      { name: "蘇打水", amount: "60 ml" },
+    ],
+    method: "Highball 杯加冰，倒入威士忌，補 Ginger Beer 和蘇打水，輕攪。",
+    garnish: "萊姆角",
+    moods: ["drunk", "relax"],
+  },
+  {
+    id: 49, name: "Pisco Sour", spirit: "other",
+    badges: ["皮斯科", "搖盪", "秘魯/智利"],
+    preview: "安地斯山脈的驕傲，帶苦精圖案的蛋白沙棱",
+    ingredients: [
+      { name: "Pisco（皮斯科白蘭地）", amount: "60 ml" },
+      { name: "萊姆汁或檸檬汁", amount: "30 ml" },
+      { name: "Simple Syrup", amount: "20 ml" },
+      { name: "蛋白", amount: "1 個" },
+      { name: "Angostura 苦精", amount: "裝飾用" },
+    ],
+    method: "先乾搖 30 秒使蛋白起泡。加冰再搖 15 秒。雙重濾網濾入 coupe 或岩石杯。在蛋白泡沫上點幾滴苦精再以牙籤劃出圖案。",
+    garnish: "Angostura 苦精點圖案",
+    moods: ["romantic", "miss"],
+  },
+  {
+    id: 50, name: "Whiskey Sour", spirit: "whiskey",
+    badges: ["波本威士忌", "搖盪"],
+    preview: "最親民的威士忌酸味調酒",
+    ingredients: [
+      { name: "波本威士忌", amount: "60 ml" },
+      { name: "檸檬汁（新鮮）", amount: "20 ml" },
+      { name: "Simple Syrup", amount: "20 ml" },
+      { name: "蛋白（可選）", amount: "1 個" },
+    ],
+    method: "若加蛋白，先乾搖 30 秒。加冰再搖盪。雙重濾網濾入裝冰的岩石杯或 coupe。",
+    garnish: "橙片 + 酒漬櫻桃",
+    moods: ["drunk", "relax"],
+  }
+];
+
+// Image cache keyed by cocktail id
+const imageCache = {};
+
+const cocktailImages = {
+  'Old Fashioned': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Old_Fashioned_Cocktail.jpg/400px-Old_Fashioned_Cocktail.jpg',
+  'Manhattan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Manhattan_Cocktail2.jpg/400px-Manhattan_Cocktail2.jpg',
+  'Sazerac': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Sazerac_Cocktail.jpg/400px-Sazerac_Cocktail.jpg',
+  'Negroni': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/A_Negroni_cocktail%2C_with_Orange_Peel_Garnish.jpg/400px-A_Negroni_cocktail%2C_with_Orange_Peel_Garnish.jpg',
+  'Mint Julep': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Mint_julep_003.jpg/400px-Mint_julep_003.jpg',
+  'Tom Collins': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Tom_Collins_Cocktail.jpg/400px-Tom_Collins_Cocktail.jpg',
+  'Margarita': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/MargaritaReal.jpg/400px-MargaritaReal.jpg',
+  'Daiquiri': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Daiquiri_drinking_glass.jpg/400px-Daiquiri_drinking_glass.jpg',
+  'Martini': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  'Brandy Alexander': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Brandy_Alexander_Cocktail.jpg/400px-Brandy_Alexander_Cocktail.jpg',
+  'Improved Whiskey Cocktail': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Old_Fashioned_Cocktail.jpg/400px-Old_Fashioned_Cocktail.jpg',
+  'Gin Rickey': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Tom_Collins_Cocktail.jpg/400px-Tom_Collins_Cocktail.jpg',
+  'Paloma': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Paloma_Cocktail.jpg/400px-Paloma_Cocktail.jpg',
+  'Bee\'s Knees': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Bee%27s_Knees_cocktail.jpg/400px-Bee%27s_Knees_cocktail.jpg',
+  'Monte Carlo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Manhattan_Cocktail2.jpg/400px-Manhattan_Cocktail2.jpg',
+  'Boulevardier': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Boulevardier_Cocktail.jpg/400px-Boulevardier_Cocktail.jpg',
+  'Mai Tai': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/MaiTai.jpg/400px-MaiTai.jpg',
+  'Aperol Spritz': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Aperol_spritz.JPG/400px-Aperol_spritz.JPG',
+  'Champagne Cocktail': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Champagne_cocktail.jpg/400px-Champagne_cocktail.jpg',
+  'Pink Lady': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Pink_lady_cocktail.jpg/400px-Pink_lady_cocktail.jpg',
+  'Jack Rose': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Jack_Rose_Cocktail.jpg/400px-Jack_Rose_Cocktail.jpg',
+  'Caipirinha': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Caipirinha_Cocktail_With_Lime.jpg/400px-Caipirinha_Cocktail_With_Lime.jpg',
+  'Mexican Firing Squad': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/MargaritaReal.jpg/400px-MargaritaReal.jpg',
+  'Last Word': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Last_Word_Cocktail.jpg/400px-Last_Word_Cocktail.jpg',
+  'Sidecar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sidecar_Cocktail.jpg/400px-Sidecar_Cocktail.jpg',
+  'Mojito': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/2006-02-13_Mojito.jpg/400px-2006-02-13_Mojito.jpg',
+  'Corpse Reviver No. 2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  'Gimlet': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Gimlet_Cocktail.jpg/400px-Gimlet_Cocktail.jpg',
+  'Martinez': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  'Singapore Sling': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Singapore_Sling_cocktail.jpg/400px-Singapore_Sling_cocktail.jpg',
+  'Silver Fizz': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Pink_lady_cocktail.jpg/400px-Pink_lady_cocktail.jpg',
+  'Daisy': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/MargaritaReal.jpg/400px-MargaritaReal.jpg',
+  'Jungle Bird': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/MaiTai.jpg/400px-MaiTai.jpg',
+  'Americano': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Americano_Cocktail_with_garnish.jpg/400px-Americano_Cocktail_with_garnish.jpg',
+  'Bamboo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  'Dark \'n Stormy': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Dark_and_Stormy.jpg/400px-Dark_and_Stormy.jpg',
+  'Whiskey Smash': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Mint_julep_003.jpg/400px-Mint_julep_003.jpg',
+  'Gin Fix': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Tom_Collins_Cocktail.jpg/400px-Tom_Collins_Cocktail.jpg',
+  'Vesper': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  '20th Century': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  'French 75': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/French75.jpg/400px-French75.jpg',
+  'Aviation': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Aviation_Cocktail.jpg/400px-Aviation_Cocktail.jpg',
+  'Rye Buck': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Old_Fashioned_Cocktail.jpg/400px-Old_Fashioned_Cocktail.jpg',
+  'Moscow Mule': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Moscow_Mule_Cocktail.jpg/400px-Moscow_Mule_Cocktail.jpg',
+  'Kangaroo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg',
+  'Hemingway Daiquiri': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Daiquiri_drinking_glass.jpg/400px-Daiquiri_drinking_glass.jpg',
+  'Vieux Carré': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Old_Fashioned_Cocktail.jpg/400px-Old_Fashioned_Cocktail.jpg',
+  'Presbyterian': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Tom_Collins_Cocktail.jpg/400px-Tom_Collins_Cocktail.jpg',
+  'Pisco Sour': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Pisco_sour_05.jpg/400px-Pisco_sour_05.jpg',
+  'Whiskey Sour': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Whiskey_sour_with_egg_white.jpg/400px-Whiskey_sour_with_egg_white.jpg',
+};
+
+function getImageUrl(name) {
+  return cocktailImages[name] || 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Martini2.jpg/400px-Martini2.jpg';
+}
+
+function loadPhotoForCard(el, cocktail) {
+  const wrap = el.querySelector('.card-photo-wrap');
+  const skeleton = el.querySelector('.photo-skeleton');
+  const img = el.querySelector('.card-photo-img');
+  if (!wrap || img.dataset.loaded === 'true') return;
+
+  img.src = getImageUrl(cocktail.name);
+  img.onload = () => {
+    img.classList.add('loaded');
+    img.dataset.loaded = 'true';
+    if (skeleton) skeleton.classList.add('hidden');
+  };
+  img.onerror = () => {
+    if (skeleton) skeleton.textContent = '圖片暫無';
+  };
+}
+
+function renderCards(list) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  document.getElementById('count').textContent = list.length;
+  list.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.style.animationDelay = (i * 0.04) + 's';
+    el.dataset.id = c.id;
+    el.innerHTML = `
+      <button class="fav-btn ${favourites.has(c.id)?'saved':''}" data-id="${c.id}" title="加入收藏">${favourites.has(c.id)?'❤️':'🤍'}</button>
+      <div class="card-num">No. ${String(c.id).padStart(2,'0')}</div>
+      <div class="card-name">${c.name}</div>
+      <div class="card-badges">
+        ${c.badges.map((b,idx) => `<span class="badge ${idx===0?'badge-spirit':'badge-method'}">${b}</span>`).join('')}
+      </div>
+      <div class="card-preview">${c.preview}</div>
+      ${c.moods && c.moods.length ? `<div class="mood-tags">${c.moods.map(m => `<span class="mood-tag ${m}">${moodLabels[m]}</span>`).join('')}</div>` : ''}
+      <div class="card-expand">
+        <div class="section-label">成分與比例</div>
+        <ul class="ingredients-list">
+          ${c.ingredients.map(ing => `<li><span class="ing-name">${ing.name}</span><span class="ing-amount">${ing.amount}</span></li>`).join('')}
+        </ul>
+        <div class="section-label">製作方式</div>
+        <p class="method-text">${c.method}</p>
+        <div class="garnish-row"><span>裝飾</span>${c.garnish}</div>
+        <div class="section-label" style="margin-top:1.25rem">成品圖</div>
+        <div class="card-photo-wrap">
+          <div class="photo-skeleton">載入圖片中…</div>
+          <img class="card-photo-img" alt="${c.name} cocktail" src="" />
+          <div class="photo-credit">Photo via <a href="https://unsplash.com?utm_source=cocktail_guide&utm_medium=referral" target="_blank">Unsplash</a></div>
+        </div>
+      </div>
+      <div class="toggle-icon">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+          <rect x="4" y="0" width="2" height="10"/>
+          <rect x="0" y="4" width="10" height="2" class="h-bar"/>
+        </svg>
+      </div>
+    `;
+    // Fav button: stop propagation so it doesn't expand card
+    el.querySelector('.fav-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      toggleFav(c.id, e.currentTarget);
+    });
+
+    el.addEventListener('click', () => {
+      const wasExpanded = el.classList.contains('expanded');
+      el.classList.toggle('expanded');
+      const hBar = el.querySelector('.h-bar');
+      if (el.classList.contains('expanded')) {
+        hBar.style.display = 'none';
+        if (!wasExpanded) loadPhotoForCard(el, c);
+      } else {
+        hBar.style.display = '';
+      }
+    });
+    grid.appendChild(el);
+  });
+}
+
+
+
+const moodLabels = {
+  happy:    '😄 開心',
+  relax:    '🌿 放鬆',
+  miss:     '🌙 思念',
+  sexy:     '🔥 性愛',
+  romantic: '🌹 浪漫',
+  drunk:    '🥃 爛醉'
+};
+
+function showEmptyState() {
+  const grid = document.getElementById('grid');
+  if (!currentMood && currentFilter === 'all' && !currentSearch) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🍸</div>
+        <p class="empty-title">今晚想喝什麼？</p>
+        <p class="empty-hint">選擇一個心情，或用搜尋找到你的調酒</p>
+      </div>
+    `;
+    document.getElementById('count').textContent = '0';
+    return true;
+  }
+  return false;
+}
+
+function applyFilters() {
+  viewingFavs = false;
+  document.getElementById('btn-favs').classList.remove('active-view');
+  // If no mood selected and no search, show empty state
+  if (!currentMood && !currentSearch) {
+    if (showEmptyState()) return;
+  }
+
+  let list = cocktails;
+
+  // Filter by mood first (only show matching mood cards)
+  if (currentMood) {
+    list = list.filter(c => c.moods && c.moods.includes(currentMood));
+  }
+
+  if (currentFilter !== 'all') list = list.filter(c => c.spirit === currentFilter);
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    list = list.filter(c => c.name.toLowerCase().includes(q) || c.badges.some(b => b.toLowerCase().includes(q)) || c.preview.toLowerCase().includes(q));
+  }
+  renderCards(list);
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+document.querySelectorAll('.mood-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mood = btn.dataset.mood;
+    if (currentMood === mood) {
+      currentMood = null;
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    } else {
+      currentMood = mood;
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    applyFilters();
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  currentSearch = e.target.value;
+  applyFilters();
+});
+
+
+// ── 收藏 ──────────────────────────────────────────
+
+function updateFavCount() {
+  const el = document.getElementById('fav-count');
+  el.textContent = favourites.size;
+  el.classList.toggle('zero', favourites.size === 0);
+}
+
+function toggleFav(id, btnEl) {
+  if (favourites.has(id)) {
+    favourites.delete(id);
+    if (btnEl) { btnEl.textContent = '🤍'; btnEl.classList.remove('saved'); }
+  } else {
+    favourites.add(id);
+    if (btnEl) { btnEl.textContent = '❤️'; btnEl.classList.add('saved'); }
+  }
+  updateFavCount();
+  // If in favs view, refresh
+  if (viewingFavs) showFavourites();
+  // Sync modal button
+  if (currentModalCocktail && currentModalCocktail.id === id) {
+    const mb = document.getElementById('modal-fav-btn');
+    mb.textContent = favourites.has(id) ? '❤️ 已收藏' : '🤍 加入收藏';
+  }
+  // Sync all fav buttons on cards
+  document.querySelectorAll('.fav-btn').forEach(b => {
+    if (parseInt(b.dataset.id) === id) {
+      b.textContent = favourites.has(id) ? '❤️' : '🤍';
+      b.classList.toggle('saved', favourites.has(id));
+    }
+  });
+}
+
+function showFavourites() {
+  viewingFavs = true;
+  document.getElementById('btn-favs').classList.add('active-view');
+  // Clear mood/search active state visually but keep data
+  const list = cocktails.filter(c => favourites.has(c.id));
+  const grid = document.getElementById('grid');
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="fav-empty">
+        <span class="empty-icon">🤍</span>
+        <p class="empty-title">還沒有收藏</p>
+        <p class="empty-hint">在調酒卡片右上角點 🤍 加入收藏</p>
+      </div>`;
+    document.getElementById('count').textContent = '0';
+  } else {
+    renderCards(list);
+  }
+}
+
+document.getElementById('btn-favs').addEventListener('click', () => {
+  if (viewingFavs) {
+    // Toggle off
+    viewingFavs = false;
+    document.getElementById('btn-favs').classList.remove('active-view');
+    applyFilters();
+  } else {
+    // Clear mood/filter highlight
+    currentMood = null;
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    showFavourites();
+  }
+});
+
+// ── 隨機推薦 ──────────────────────────────────────────
+function openModal(cocktail, eyebrow) {
+  currentModalCocktail = cocktail;
+  document.getElementById('modal-eyebrow').textContent = eyebrow || '今晚推薦';
+  document.getElementById('modal-name').textContent = cocktail.name;
+  document.getElementById('modal-preview').textContent = cocktail.preview;
+  document.getElementById('modal-method').textContent = cocktail.method;
+  document.getElementById('modal-garnish').textContent = cocktail.garnish;
+
+  const badges = document.getElementById('modal-badges');
+  badges.innerHTML = cocktail.badges.map((b,i) =>
+    `<span class="badge ${i===0?'badge-spirit':'badge-method'}">${b}</span>`
+  ).join('');
+
+  const ings = document.getElementById('modal-ingredients');
+  ings.innerHTML = cocktail.ingredients.map(ing =>
+    `<li><span class="ing-name">${ing.name}</span><span class="ing-amount">${ing.amount}</span></li>`
+  ).join('');
+
+  const mb = document.getElementById('modal-fav-btn');
+  mb.textContent = favourites.has(cocktail.id) ? '❤️ 已收藏' : '🤍 加入收藏';
+
+  document.getElementById('modal-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+  currentModalCocktail = null;
+}
+
+function randomCocktail() {
+  const pick = cocktails[Math.floor(Math.random() * cocktails.length)];
+  openModal(pick, '🎲 今晚就喝這杯');
+}
+
+document.getElementById('btn-random').addEventListener('click', randomCocktail);
+document.getElementById('modal-shuffle').addEventListener('click', randomCocktail);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+document.getElementById('modal-fav-btn').addEventListener('click', () => {
+  if (currentModalCocktail) toggleFav(currentModalCocktail.id, null);
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Show empty state on load
+document.getElementById('grid').innerHTML = '';
+document.getElementById('count').textContent = '0';
+showEmptyState();
+</script>
+</body>
+</html>
