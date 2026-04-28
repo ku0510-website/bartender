@@ -849,7 +849,7 @@
     <button class="mood-btn mood-drunk"    data-mood="drunk">   <span class="mood-emoji">🥃</span> 就是要爛醉 </button>
   </div>
 </div>
-<p class="count-bar">顯示 <span id="count">50</span> / 50 款調酒</p>
+<p class="count-bar">顯示 <span id="count">0</span> / <span id="total">0</span> 款調酒</p>
 
 <div class="grid" id="grid"></div>
 
@@ -4415,6 +4415,7 @@ document.addEventListener('keydown', e => {
 // Show empty state on load
 document.getElementById('grid').innerHTML = '';
 document.getElementById('count').textContent = '0';
+document.getElementById('total').textContent = cocktails.length;
 showEmptyState();
 </script>
 </body>
